@@ -1,3 +1,6 @@
+#ifndef RobotGlobals_h__
+#define RobotGlobals_h__
+
 // Global Constants and Parameters
 
 // Link Constants
@@ -8,6 +11,7 @@ const float L4 = 142.0f;
 const float L5 = 410.0f;
 const float L6 = 80.0f;
 const float L7 = 60.0f;
+const float GRIPPER_OFFSET = -10.0f;
 
 // Angle Limits
 const float THETA1_MAX = 150.0f;
@@ -42,3 +46,5 @@ bool D3Check(float dist)
 {
   return ((dist > D3_MAX || dist < D3_MIN) ? false : true);
 }
+
+#endif // RobotGlobals_h__

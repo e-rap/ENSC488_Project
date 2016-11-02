@@ -1,3 +1,6 @@
+#ifndef ensc488_h__
+#define ensc488_h__
+
 //-----------------------------------------------------------------------------
 // ensc-488.h 
 // 
@@ -21,12 +24,12 @@
 //
 //-----------------------------------------------------------------------------
 
-#define PI                (3.1415926)
-#define DEG2RAD(x)        (x*PI/180.)
-#define RAD2DEG(x)        (x*180./PI)
-#define MS2SEC(x)         (x/1000.)
-#define MM2M(x)           (x/1000.)
-#define M2MM(x)           (x*1000.)
+#define PI                (3.1415926f)
+#define DEG2RAD(x)        (x*PI/180.0f)
+#define RAD2DEG(x)        (x*180.0f/PI)
+#define MS2SEC(x)         (x/1000.0f)
+#define MM2M(x)           (x/1000.0f)
+#define M2MM(x)           (x*1000.0f)
 
 #pragma comment( lib, "PowerCubeSim.lib" )
 
@@ -263,3 +266,4 @@ __declspec( dllimport) void OpenMonitor();
 //      
 //-----------------------------------------------------------------------------
 __declspec( dllimport) void CloseMonitor();
+#endif // ensc488_h__

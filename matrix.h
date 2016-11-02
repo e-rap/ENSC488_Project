@@ -44,7 +44,7 @@ std::vector<float> VectorAdd(std::vector<float> a, std::vector<float> b)
     throw std::exception("ERROR: Cannot add vectors of different sizes");
   }
   std::vector<float> result;
-  for (int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < a.size(); i++)
   {
     result.push_back(a[i] + b[i]);
   }
@@ -57,10 +57,10 @@ std::vector<float> VectorSub(std::vector<float> a, std::vector<float> b)
   if (a.size() != b.size())
   {
     throw std::exception("ERROR: Cannot add vectors of different sizes");
-    return 0.0f;
+    return std::vector<float>();
   }
   std::vector<float> result;
-  for (int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < a.size(); i++)
   {
     result.push_back(a[i] - b[i]);
   }
@@ -70,7 +70,7 @@ std::vector<float> VectorSub(std::vector<float> a, std::vector<float> b)
 // Multiply vector by scalar
 std::vector<float> VectorMulS(std::vector<float> a, float constant)
 {
-  for (int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < a.size(); i++)
   {
     a[i] = a[i] * constant;
   }
@@ -81,7 +81,7 @@ std::vector<float> VectorMulS(std::vector<float> a, float constant)
 float VectorMag(std::vector<float> a)
 {
   float sum = 0.0f;
-  for (int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < a.size(); i++)
   {
     sum += pow(a[1], 2);
   }
@@ -98,7 +98,7 @@ float VectorDiffSum(std::vector<float> a, std::vector<float> b)
   }
 
   float sum = 0.0f;
-  for (int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < a.size(); i++)
   {
     sum += abs(a[i] - b[i]);
   }
@@ -130,7 +130,7 @@ std::vector<float> ITOU(matrix frame){
 //Displays matrix
 void DisplayM(matrix A){
     
-    for(int i=0;i<4;i++){
+    for(unsigned int i=0;i<4;i++){
         for(int j=0;j<4;j++){
             std::cout << A[i][j] << "   ";
         }
@@ -142,7 +142,7 @@ void DisplayM(matrix A){
 //Displays std::vector
 void DisplayV(std::vector<float> vector){
     
-    for(int i=0; i<4; i++){
+    for(unsigned int i=0; i<4; i++){
         std::cout<<vector[i]<< "   ";
     }
     std::cout<<std::endl<<std::endl;
@@ -153,7 +153,7 @@ matrix Multiply(matrix A, matrix B){
     
     matrix result(4, std::vector<float>(4));
     
-    for(int i=0;i<4;i++){
+    for(unsigned int i=0;i<4;i++){
         for(int j=0;j<4;j++){
             for(int k=0;k<4;k++){
                 result[i][j]+=A[i][k]*B[k][j];
@@ -168,7 +168,7 @@ matrix Add(matrix A, matrix B){
     
     matrix result(4, std::vector<float>(4));
     
-    for(int i=0;i<4;i++){
+    for(unsigned int i=0;i<4;i++){
         for(int j=0;j<4;j++){
             result[i][j]=A[i][j]+B[i][j];
         }
@@ -182,7 +182,7 @@ matrix Inverse(matrix A){
     matrix result(4, std::vector<float>(4));
     
     //Rotation part of T is just transposing
-    for (int i=0; i<3;i++){
+    for (unsigned int i=0; i<3;i++){
         for (int j=0; j<3;j++){
             result[i][j]=A[j][i];
         }
@@ -190,12 +190,12 @@ matrix Inverse(matrix A){
     
     //new origin std::vector is -R_T*v_old
     for(int k=0; k<3; k++){
-        for(int i=0; i<3;i++){
+        for(unsigned int i=0; i<3;i++){
             result[k][3]+=-A[i][k]*A[i][3];
         }
     }
     //last row doesn't change
-    for(int i=0; i<4; i++){
+    for(unsigned int i=0; i<4; i++){
         result[3][i]=A[3][i];
     }
     return result;
