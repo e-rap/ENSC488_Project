@@ -18,8 +18,4 @@ void main()
 
   cout << sol << endl << endl;
 
-  //DisplayV(near);
-
-  int x;
-  cin >> x;
 }

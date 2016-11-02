@@ -40,7 +40,7 @@ void INVKIN(std::vector<float> DesiredPosition, std::vector<float> current, std:
   {
     float costheta2 = (pow(x, 2) + pow(y, 2) - pow(L3, 2) - pow(L4, 2)) / (2*L3*L4);
     theta2 = DEG2RAD(atan2(sign*sqrt(1 - costheta2), costheta2));
-    float alpha = DEG2RAD(acos(pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2)))));
+    float alpha = DEG2RAD(acos((pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2)))));
     float beta = DEG2RAD(atan2(y, x));
 
     for (int sign2 = -1; sign2 <= 1; sign2 += 2)
@@ -74,13 +74,11 @@ void INVKIN(std::vector<float> DesiredPosition, std::vector<float> current, std:
       if (diffsum > farthest)
       {
         farthest = diffsum;
-        far.clear();
         far = solutions[i];
       }
       if (diffsum < nearest)
       {
         nearest = diffsum;
-        near.clear();
         near = solutions[i];
       }
     }
