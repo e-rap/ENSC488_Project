@@ -122,7 +122,7 @@ __declspec( dllimport) bool GetConfiguration(JOINT &conf);
 //      state : Current state for every joint.
 //              for detailed description about stateid, please refer to "stateid.h".
 //         Note that, the state should be a unsigned long integer for each joint,
-//              however for simplicity, double float is used in the argument,
+//              however for simplicity, double double is used in the argument,
 //              so you need to cast double to long before you can find out the ID.
 //
 //Return Value:

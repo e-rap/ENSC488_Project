@@ -13,13 +13,13 @@
 #include "matrix.h"
 #include "RobotGlobals.h"
 
-matrix KIN(float theta1, float theta2, float d3, float theta4);
+matrix KIN(double theta1, double theta2, double d3, double theta4);
 
-std::vector<float> WHERE()
+vect WHERE()
 {
-    std::vector<float> v(4);
-    float theta1, theta2, d3, theta4;
-    matrix output(4, std::vector<float>(4));
+    vect v(4);
+    double theta1, theta2, d3, theta4;
+    matrix output(4, vect(4));
     
     //prompting user for joint variables
     
@@ -46,14 +46,14 @@ std::vector<float> WHERE()
 }
 
 
-matrix KIN(float theta1, float theta2, float d3, float theta4)
+matrix KIN(double theta1, double theta2, double d3, double theta4)
 {
-    matrix T01(4, std::vector<float>(4));
-    matrix T12(4, std::vector<float>(4));
-    matrix T23(4, std::vector<float>(4));
-    matrix T34(4, std::vector<float>(4));
-    matrix T45(4, std::vector<float>(4));
-    matrix T05(4, std::vector<float>(4));
+    matrix T01(4, vect(4));
+    matrix T12(4, vect(4));
+    matrix T23(4, vect(4));
+    matrix T34(4, vect(4));
+    matrix T45(4, vect(4));
+    matrix T05(4, vect(4));
     
     //assigning T matrices
     
