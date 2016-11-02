@@ -45,3 +45,14 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+Debug/SCARA_ROBOT.Build.CppClean.log
+Debug/SCARA_ROBOT.log
+*.tlog
+Debug/SCARA_ROBOT.pdb
+*.idb
+Debug/vc120.pdb
+Debug/SCARA_ROBOT.ilk
+Debug/Test1.obj
+*.sdf
+SCARA_ROBOT.sdf
+SCARA_ROBOT.v12.suo

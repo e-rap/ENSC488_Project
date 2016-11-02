@@ -21,13 +21,16 @@
     <ClInclude Include="WHERE.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InverseKin.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="ensc-488.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stateid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotGlobals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InverseKin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

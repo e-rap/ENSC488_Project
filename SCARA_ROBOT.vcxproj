@@ -67,6 +67,7 @@
     <ClInclude Include="ensc-488.h" />
     <ClInclude Include="InverseKin.h" />
     <ClInclude Include="matrix.h" />
+    <ClInclude Include="RobotGlobals.h" />
     <ClInclude Include="stateid.h" />
     <ClInclude Include="WHERE.h" />
   </ItemGroup>
