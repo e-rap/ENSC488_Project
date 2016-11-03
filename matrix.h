@@ -133,8 +133,8 @@ vect ITOU(matrix frame){
 //Displays matrix
 void DisplayM(matrix A){
     
-    for(unsigned int i=0;i<4;i++){
-        for(int j=0;j<4;j++){
+    for(unsigned int i=0;i<A.size();i++){
+        for(int j=0;j<A[0].size();j++){
             std::cout << A[i][j] << "   ";
         }
         std::cout << std::endl;
@@ -145,7 +145,7 @@ void DisplayM(matrix A){
 //Displays std::vector
 void DisplayV(vect vector){
     
-    for(unsigned int i=0; i<4; i++){
+    for(unsigned int i=0; i<vector.size(); i++){
         std::cout<<vector[i]<< "   ";
     }
     std::cout<<std::endl<<std::endl;

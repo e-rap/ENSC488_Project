@@ -2,53 +2,57 @@
 #include "ensc-488.h"
 #include "WHERE.h"
 #include "InverseKin.h"
+#include "PickAndPlace.h"
 
 using namespace std;
 
 // Globals //
 vect gCurrentConfig; // Current_Robot Configuration
+bool gGrasp = false;
+
 //////////////////////
 // Helper Functions //
 //////////////////////
-void JointToVect(JOINT joint, vect& vector)
-{
-  vect result;
-  for (int i = 0; i < NUM_OF_LINK_VARS; i++)
-  {
-    result.push_back(joint[i]);
-  }
-  vector = result;
-}
-
-void VectToJoint(vect vector, JOINT& joint)
-{
-  for (int i = 0; i < NUM_OF_LINK_VARS; i++)
-  {
-    joint[i] = vector[i];
-  }
-}
-
-void GetCurrentConfig(vect& cur_config)
-{
-  JOINT config;
-  GetConfiguration(config);
-  JointToVect(config, cur_config);
-}
-
-void InitRobot()
-{
-  // Reset the Robot
-  StopRobot();
-  ResetRobot();
-
-  // Update Current Config
-  GetCurrentConfig(gCurrentConfig);
-}
 
 void ForwardKin()
 {
-  vect CurPositionVect = WHERE();
+  double theta1, theta2, d3, theta4;
 
+  std::cout << "Please enter the first joint variable THETA1" << std::endl;
+  std::cin >> theta1;
+  std::cout << "Please enter the second joint variable THETA2" << std::endl;
+  std::cin >> theta2;
+  std::cout << "Please enter the third joint variable D3" << std::endl;
+  std::cin >> d3;
+  std::cout << "Please enter the fourth joint variable THETA4" << std::endl;
+  std::cin >> theta4;
+  std::cout << std::endl << std::endl;
+
+  vect CurPositionVect = WHERE(theta1, theta2, d3, theta4);
+  cout << "Calculated tool frame relative to the station \n";
+  DisplayV(CurPositionVect);
+
+  char answer;
+  cout << "Would you like the robot to move there?\n Y or N\n>";
+  cin >> answer;
+
+  if (answer == 'y' || answer == 'Y')
+  {
+
+    cout << "Moving Robot \n";
+    JOINT jointConfig = { theta1, theta2, d3, theta4 };
+    MoveToConfiguration(jointConfig,true);
+  }
+  else if (answer == 'n' || answer == 'N')
+  {
+    cout << "okay then goodbye! :)\n";
+    return;
+  }
+  else
+  {
+    cout << "Invalid Input!\n";
+    return;
+  }
 }
 
 void InverseKin()
@@ -59,7 +63,6 @@ void InverseKin()
   bool sol = false;
   int select = 0;
   JOINT config;
-
 
   cout << "Input the configuration for the tool frame relative to the station frame." << endl;
   cout << "x position >";
@@ -91,12 +94,17 @@ void InverseKin()
   cout << "Farthest Solution" << endl;
   DisplayV(far_sol);
 
+  cout << "0 : Don't move the robot and Exit";
   cout << "1 : Move using nearest solution" << 
     endl <<"2 : Move using farthest solution" << endl << ">";
   cin >> select;
   cout << endl << endl;
 
-  if (select == 1)
+  if (select == 0)
+  {
+    return;
+  }
+  else if (select == 1)
   {
     VectToJoint(near_sol,config);
     MoveToConfiguration(config, true);
@@ -116,11 +124,61 @@ void InverseKin()
   //ResetRobot();
 }
 
-void PickAndPlace()
+void PickAndPlaceHelper()
 {
+  vect desiredPosition1(4);
+  vect desiredPosition2(4);
+  double height;
 
+  cout << "Input the current object frame." << endl;
+  cout << "x position >";
+  cin >> desiredPosition1[0];
+  cout << endl;
+  cout << "y position >";
+  cin >> desiredPosition1[1];
+  cout << endl;
+  cout << "z position >";
+  cin >> desiredPosition1[2];
+  cout << endl;
+  cout << "phi angle >";
+  cin >> desiredPosition1[3];
+  cout << endl << endl;
+
+  cout << "Input the goal frame." << endl;
+  cout << "x position >";
+  cin >> desiredPosition2[0];
+  cout << endl;
+  cout << "y position >";
+  cin >> desiredPosition2[1];
+  cout << endl;
+  cout << "z position >";
+  cin >> desiredPosition2[2];
+  cout << endl;
+  cout << "phi angle >";
+  cin >> desiredPosition2[3];
+  cout << endl << endl;
+
+  cout << "Input Object height\n>";
+  cin >> height;
+
+  PickAndPlace(desiredPosition1, desiredPosition2, height);
 }
 
+void InitRobot()
+{
+  // Reset the Robot
+  StopRobot();
+  ResetRobot();
+
+  // Update Current Config
+  GetCurrentConfig(gCurrentConfig);
+}
+
+void EndSession()
+{
+  StopRobot();
+  CloseMonitor();
+}
 
 void main()
 {
@@ -133,7 +191,7 @@ void main()
 
   while (main_loop)
   {
-    cout << "Pick From the list of options\n\t0 : Exit\n\t1 : ForwardKin\n\t2 : InverseKin";
+    cout << "Pick From the list of options\n\t0 : Exit\n\t1 : ForwardKin\n\t2 : InverseKin\n\t3 : Pick and Place\n\t4 : Toggle Grasp\n";
     cout << endl << ">";
     int user_input;
     cin >> user_input;
@@ -151,9 +209,21 @@ void main()
     {
       InverseKin();
     }
+    else if (user_input == 3)
+    {
+      PickAndPlaceHelper();
+    }
+
+    else if (user_input == 4)
+    {
+      gGrasp = !gGrasp;
+      Grasp(gGrasp);
+    }
     else
     {
       cout << "Invalid Input.\n";
     }
   }
+
+  EndSession();
 }

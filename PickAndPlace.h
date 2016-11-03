@@ -10,57 +10,104 @@
 #define PickAndPlace_h
 
 #include "InverseKin.h"
+#include "RobotGlobals.h"
 
 //moves Object from pos0 to pos1; positions wrt station frame T -> specify Base relative to S (User input)
-void PickAndPlace(vector<double> pos0 , vector<double> pos1, double size, vector<double> BRelSuser){
+void PickAndPlace(vect pos0 , vect pos1, double objectHeight){
     
-    matrix T_0(4, vector<double>(4));
-    matrix T_1(4, vector<double>(4));
-    matrix BRelS(4, vector<double>(4));
-    BRelS=UTOI(BRelSuser);
+    
+
+    matrix T_0(4, vect(4));
+    matrix T_1(4, vect(4));
+    matrix T_0i(4, vect(4));
+    matrix T_1i(4, vect(4));
+    vect temp = { 0, 0, objectHeight + PICK_PLACE_TOLERANCE, 0 };  
+    vect pos0i = VectorAdd(pos0, temp);
+    vect pos1i = VectorAdd(pos1, temp);
+
+    vect temp1 = { 0, 0, objectHeight - GRIPPER_OFFSET, 0};
+    pos0 = VectorAdd(pos0, temp1);
+    pos1 = VectorAdd(pos1, temp1);
+
     T_0=UTOI(pos0);
     T_1=UTOI(pos1);
-    vector<double> current0(4);
-    vector<double> near0(4);
-    vector<double> far0(4);
-    bool sol0;
-    vector<double> current1(4);
-    vector<double> near1(4);
-    vector<double> far1(4);
-    bool sol1;
+    T_0i = UTOI(pos0i);
+    T_1i = UTOI(pos1i);
+
+    vect current(4);
+    vect cur_solution(4);
+    JOINT solution;
+    JOINT velocity = { 5, 5, 5, 5 };
+    JOINT accel = { 0, 0, 0, 0 };
+    bool sol;
     
     //get current config
     for (int i=0; i<4; i++){
-        current0[i]=GetConfiguration()[i];
+        current[i]=GetCurrentConfig()[i];
+    }
+    //find sol0i
+    SOLVE(T_0i,current,cur_solution,vect(),sol);
+    if (sol == false)
+    {
+      std::cout << "ERROR: No solutions found.\n";
+      return;
+    }
+    //move to size mm above sol0
+    VectToJoint(cur_solution, solution);
+    MoveToConfiguration(solution, true);
+
+    //get current config
+    for (int i = 0; i < 4; i++){
+      current[i] = GetCurrentConfig()[i];
     }
     //find sol0
-    SOLVE(T_0,current0,near0,far0,sol0);
-    
-    //move to size mm above sol0
-    MoveToConfiguration(near0[0],near0[1],near0[2]-size,near0[3]);
-    //slowly move down to pos0 with velocity 5mm/s
-    MoveWithConfVelAcc(near0[0],near0[1],near0[2],near0[3],5,0);
-    //grab object
-    Grasp(true);
-    //slowly move back up
-    MoveWithConfVelAcc(near0[0],near0[1],near0[2]-size,near0[3],5,0);
-    //move to size mm above pos1
-    
-    //get current config
-    for (int i=0; i<4; i++){
-        current1[i]=GetConfiguration()[i];
+    SOLVE(T_0, current, cur_solution, vect(), sol);
+    if (sol == false)
+    {
+      std::cout << "ERROR: No solutions found.\n";
+      return;
     }
-    //find sol1
-    SOLVE(T_1,current1,near1,far1,sol1);
-    
-    MoveToConfiguration(near1[0],near1[1],near1[2]-size,near1[3]);
-    ////slowly move down to pos1 with velocity 5mm/s
-    MoveWithConfVelAcc(near1[0],near1[1],near1[2],near1[3],5);
-    //release object
+    //move to size mm above sol0
+    VectToJoint(cur_solution, solution);
+    MoveToConfiguration(solution, true);
+    //TODO: Add delay maybe?
+    Grasp(true);
+
+    //slowly move down to pos0 with velocity 5mm/s
+    //get current config
+    for (int i = 0; i < 4; i++){
+      current[i] = GetCurrentConfig()[i];
+    }
+    //find sol0
+    SOLVE(T_1i, current, cur_solution, vect(), sol);
+    if (sol == false)
+    {
+      std::cout << "ERROR: No solutions found.\n";
+      return;
+    }
+    //move to size mm above sol0
+    VectToJoint(cur_solution, solution);
+    MoveToConfiguration(solution,true);
+
+    //slowly move down to pos1 with vel 5mm/s
+    //get current config
+    for (int i = 0; i < 4; i++){
+      current[i] = GetCurrentConfig()[i];
+    }
+    //find sol0
+    SOLVE(T_1, current, cur_solution, vect(), sol);
+    if (sol == false)
+    {
+      std::cout << "ERROR: No solutions found.\n";
+      return;
+    }
+    //move to size mm above sol1
+    VectToJoint(cur_solution, solution);
+    MoveToConfiguration(solution, true);
+    //TODO: Add delay?
     Grasp(false);
-    MoveWithConfVelAcc(near1[0],near1[1],near1[2]-size,near1[3],5,0);
-    
-    
+
+    std::cout << "Object Successfully moved.\n";
 }
 
 #endif /* PickAndPlace_h */
