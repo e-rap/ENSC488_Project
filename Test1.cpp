@@ -112,8 +112,8 @@ void InverseKin()
     return;
   }
 
-  StopRobot();
-  ResetRobot();
+  //StopRobot();
+  //ResetRobot();
 }
 
 void PickAndPlace()

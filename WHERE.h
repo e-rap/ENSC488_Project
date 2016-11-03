@@ -41,8 +41,9 @@ vect WHERE()
     }
     else
     {
-      cout << "Invalid Input Params.\n";
-      return;
+      vect x;
+      std::cout << "Invalid Input Params.\n";
+      return x;
     }
     
     //converting matrix into vector for user
