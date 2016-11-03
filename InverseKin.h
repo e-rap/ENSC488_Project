@@ -16,15 +16,15 @@
 #include "ensc-488.h"
 
 // INVKIN - Inverse Kinematics Function 
-// @input  TrelB   - T matrix of the tool frame relative to the base frame
+// @input  WrelB   - T matrix of the tool frame relative to the base frame
 // @input  current - current joint states {theta1,theta2,d3,theta4}  
 // @output near    - nearest solution wrt current position {theta1,theta2,d3,theta4}
 // @output far     - farthest solution wrt current position {theta1,theta2,d3,theta4}
 // @output sol     - true of solutions exist otherwise false {theta1,theta2,d3,theta4}
-void INVKIN(matrix TrelB, vect current, vect& near, vect& far, bool& sol)
+void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
 {
   // Relative to the base Frame
-  vect DesiredPosition = ITOU(TrelB);
+  vect DesiredPosition = ITOU(WrelB);
   double x   = DesiredPosition[0];
   double y   = DesiredPosition[1];
   double z   = DesiredPosition[2];
@@ -40,26 +40,26 @@ void INVKIN(matrix TrelB, vect current, vect& near, vect& far, bool& sol)
   for (int sign = -1; sign <= 1; sign += 2)
   {
     double costheta2 = (pow(x, 2) + pow(y, 2) - pow(L3, 2) - pow(L4, 2)) / (2*L3*L4);
-    theta2 = DEG2RAD(atan2(sign*sqrt(1 - costheta2), costheta2));
-    double alpha = DEG2RAD(acos((pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2)))));
-    double beta = DEG2RAD(atan2(y, x));
+    theta2 = RAD2DEG(atan2(sign*sqrt(1 - pow(costheta2,2)), costheta2));
 
-    for (int sign2 = -1; sign2 <= 1; sign2 += 2)
+  
+    double cosAlpha = (pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2))); // DEG2RAD(acos((pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2)))));    
+    double beta = RAD2DEG(atan2(y, x));
+    double alpha = RAD2DEG(atan2(-1*sign*sqrt(1 - pow(cosAlpha, 2)), cosAlpha));
+    theta1 = beta + alpha;
+    d3 = L1 + L2 - z - 410 - L6 - (2*L7);
+    theta4 = theta1 + theta2 -phi;
+
+    vect solution = { theta1, theta2, d3, theta4 };
+
+    // Make sure solution is valid
+    if (Theta1Check(theta1) && Theta2Check(theta2) && Theta4Check(theta4) && D3Check(d3))
     {
-      theta1 = beta + sign2*alpha;
-      d3 = L1 + L2 - z - 410 - L6 - L7;
-      theta4 = theta1 + theta2 -phi;
-
-      vect solution = { theta1, theta2, d3, theta4 };
-
-      // Make sure solution is valid
-      if (Theta1Check(theta1) && Theta2Check(theta2) && Theta4Check(theta4) && D3Check(d3))
-      {
-        solutions.push_back(solution);
-      }
+      solutions.push_back(solution);
     }
-  }
 
+  }
+  
   if (solutions.size() == 0)
   {
     sol = false;
@@ -71,7 +71,7 @@ void INVKIN(matrix TrelB, vect current, vect& near, vect& far, bool& sol)
     // Find the Nearest and Farthest Solution wrt. the current joint config
     double nearest = std::numeric_limits<double>::max();
     double farthest = std::numeric_limits<double>::min();
-    for (int i = 0; i < solutions.size(); i++)
+    for (unsigned int i = 0; i < solutions.size(); i++)
     {
       double diffsum = VectorDiffSum(solutions[i], current);
       if (diffsum > farthest)
@@ -103,8 +103,8 @@ void INVKIN(matrix TrelB, vect current, vect& near, vect& far, bool& sol)
 
 void SOLVE(matrix TRelS, vect& current, vect& near, vect& far, bool& sol)
 {
-  matrix TRelB = Multiply(Inverse(BRelS), TRelS);
-  INVKIN(TRelB, current, near, far, sol);
+  matrix WRelB = Multiply(Multiply(Inverse(BRelS), TRelS),Inverse(TRelW));
+  INVKIN(WRelB, current, near, far, sol);
 }
 
 

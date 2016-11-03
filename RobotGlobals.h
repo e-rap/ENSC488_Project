@@ -33,8 +33,8 @@ const double THETA4_MAX = 160.0f;
 const double THETA4_MIN = -160.0f;
 
 // Known Frames //
-const matrix BRelS = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 }, { 0, 0, 0, 1 } };
-
+const matrix BRelS = { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } };
+const matrix TRelW = { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, L7 }, { 0, 0, 0, 1 } };
 
 
 // Limit Check Functions //

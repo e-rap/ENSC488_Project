@@ -108,7 +108,9 @@ double VectorDiffSum(vect a, vect b)
 
 //converts User input to internal representation of frames (std::vector (x,y,z,phi) to matrix T)
 matrix UTOI(vect config){
-    
+
+    config[3] = DEG2RAD(config[3]);
+
     matrix frame(4, vect(4));
     
     frame=  {{cos(config[3]),-sin(config[3]),0,config[0]},
@@ -123,7 +125,7 @@ matrix UTOI(vect config){
 vect ITOU(matrix frame){
     
     vect config(4);
-    config={frame[0][3],frame[1][3],frame[2][3],atan2(frame[1][0],frame[0][0])};
+    config={frame[0][3],frame[1][3],frame[2][3],RAD2DEG(atan2(frame[1][0],frame[0][0]))};
     
     return config;
 }
@@ -192,7 +194,7 @@ matrix Inverse(matrix A){
     //new origin std::vector is -R_T*v_old
     for(int k=0; k<3; k++){
         for(unsigned int i=0; i<3;i++){
-            result[k][3]+=-A[i][k]*A[i][3];
+            result[k][3]+=(-A[i][k])*A[i][3];
         }
     }
     //last row doesn't change

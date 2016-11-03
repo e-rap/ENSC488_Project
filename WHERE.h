@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "matrix.h"
 #include "RobotGlobals.h"
+#include "ensc-488.h"
 
 matrix KIN(double theta1, double theta2, double d3, double theta4);
 
@@ -33,12 +34,18 @@ vect WHERE()
     std::cin >> theta4;
     std::cout << std::endl << std::endl;
     
-    //calling function KIN to calculate T05
-    
-    output = KIN(theta1, theta2, d3, theta4);
+    if (Theta1Check(theta1) && Theta2Check(theta2) && Theta4Check(theta4) && D3Check(d3))
+    {
+      //calling function KIN to calculate T05
+      output = KIN(theta1, theta2, d3, theta4);
+    }
+    else
+    {
+      cout << "Invalid Input Params.\n";
+      return;
+    }
     
     //converting matrix into vector for user
-    
     v = ITOU(output);
     DisplayV(v);
     
@@ -48,6 +55,10 @@ vect WHERE()
 
 matrix KIN(double theta1, double theta2, double d3, double theta4)
 {
+  theta1 = DEG2RAD(theta1);
+  theta2 = DEG2RAD(theta2);
+  theta4 = DEG2RAD(theta4);
+
     matrix T01(4, vect(4));
     matrix T12(4, vect(4));
     matrix T23(4, vect(4));
