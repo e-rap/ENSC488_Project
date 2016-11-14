@@ -94,7 +94,7 @@ void InverseKin()
   cout << "Farthest Solution" << endl;
   DisplayV(far_sol);
 
-  cout << "0 : Don't move the robot and Exit";
+  cout << "0 : Don't move the robot and Exit\n";
   cout << "1 : Move using nearest solution" << 
     endl <<"2 : Move using farthest solution" << endl << ">";
   cin >> select;

@@ -30,6 +30,22 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   double z   = DesiredPosition[2];
   double phi = DesiredPosition[3];
 
+  //if (sqrt(pow(x, 2) + pow(y, 2) > (L3 + L4)))
+  //{
+  //  sol = false;
+  //  return;
+  //}
+  //if (sqrt(pow(x, 2) + pow(y, 2) < (L3 - L4)))
+  //{
+  //  sol = false;
+  //  return;
+  //}
+  //if (z > 125 || z < 25)
+  //{
+  //  sol = false;
+  //  return;
+  //}
+
   // Calculated positions
   double theta1 = 0.0f, theta2 = 0.0f, d3 = 0.0f, theta4 = 0.0f;
 

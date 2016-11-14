@@ -28,63 +28,49 @@
 //  v={x,x,x,x};
 
 
-
+#define  VECTOR_SIZE 4
 
 #include <iostream>
 #include <vector>
 #include <cmath>
 
-using vect = std::vector<double>;
-using matrix = std::vector<std::vector<double>>; //matrix is std::vector of std::vector
+using vect = double[VECTOR_SIZE];
+using matrix = vect[VECTOR_SIZE]; //matrix is std::vector of std::vector
 
 // Add two Vectors
-vect VectorAdd(vect a, vect b)
+void VectorAdd(vect a, vect b, vect& output)
 {
-  if (a.size() != b.size())
+  for (unsigned int i = 0; i < VECTOR_SIZE; i++)
   {
-    throw std::exception("ERROR: Cannot add vectors of different sizes");
+    output[i] = (a[i] + b[i]);
   }
-  vect result;
-  for (unsigned int i = 0; i < a.size(); i++)
-  {
-    result.push_back(a[i] + b[i]);
-  }
-  return result;
 }
 
 // Subtract two vectors
-vect VectorSub(vect a, vect b)
+void VectorSub(vect a, vect b, vect& output)
 {
-  if (a.size() != b.size())
+  for (unsigned int i = 0; i < VECTOR_SIZE; i++)
   {
-    throw std::exception("ERROR: Cannot add vectors of different sizes");
-    return vect();
+    output[i] = (a[i] - b[i]);
   }
-  vect result;
-  for (unsigned int i = 0; i < a.size(); i++)
-  {
-    result.push_back(a[i] - b[i]);
-  }
-  return result;
 }
 
 // Multiply vector by scalar
-vect VectorMulS(vect a, double constant)
+void VectorMulS(vect a, double constant, vect& output)
 {
-  for (unsigned int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < VECTOR_SIZE; i++)
   {
-    a[i] = a[i] * constant;
+    output[i] = a[i] * constant;
   }
-  return a;
 }
 
 // Magnitude of the vector
 double VectorMag(vect a)
 {
   double sum = 0.0f;
-  for (unsigned int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < VECTOR_SIZE; i++)
   {
-    sum += pow(a[1], 2);
+    sum += pow(a[i], 2);
   }
   return sqrt(sum);
 }
@@ -92,14 +78,9 @@ double VectorMag(vect a)
 // The sum of the difference of each vector component
 double VectorDiffSum(vect a, vect b)
 {
-  if (a.size() != b.size())
-  {
-    throw std::exception("ERROR: Cannot add vectors of different sizes");
-    return 0.0f;
-  }
 
   double sum = 0.0f;
-  for (unsigned int i = 0; i < a.size(); i++)
+  for (unsigned int i = 0; i < VECTOR_SIZE; i++)
   {
     sum += abs(a[i] - b[i]);
   }
