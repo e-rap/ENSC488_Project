@@ -122,12 +122,12 @@ matrix UTOI(vect config){
 }
 
 //converts internal to user representation of frames (matrix T to std::vector (x,y,z,phi)
-vect ITOU(matrix frame){
+void ITOU(matrix frame, vector result){
     
-    vect config(4);
-    config={frame[0][3],frame[1][3],frame[2][3],RAD2DEG(atan2(frame[1][0],frame[0][0]))};
+  
+    result={frame[0][3],frame[1][3],frame[2][3],RAD2DEG(atan2(frame[1][0],frame[0][0]))};
     
-    return config;
+    
 }
 
 //Displays matrix
@@ -145,63 +145,58 @@ void DisplayM(matrix A){
 //Displays std::vector
 void DisplayV(vect vector){
     
-    for(unsigned int i=0; i<vector.size(); i++){
+    for(unsigned int i=0; i<VECTOR_SIZE; i++){
         std::cout<<vector[i]<< "   ";
     }
     std::cout<<std::endl<<std::endl;
 }
 
 //Multiplies 2 matrices
-matrix Multiply(matrix A, matrix B){
+void Multiply(matrix A, matrix B, matrix result){
     
     matrix result(4, vect(4));
     
-    for(unsigned int i=0;i<4;i++){
-        for(int j=0;j<4;j++){
-            for(int k=0;k<4;k++){
+    for(unsigned int i=0;i<VECTOR_SIZE;i++){
+        for(int j=0;j<VECTOR_SIZE;j++){
+            for(int k=0;k<VECTOR_SIZE;k++){
                 result[i][j]+=A[i][k]*B[k][j];
             }            
         }
     }
-    return result;
+    
 }
 
 //Adds two matrices
-matrix Add(matrix A, matrix B){
+void Add(matrix A, matrix B, matrix result){
     
-    matrix result(4, vect(4));
-    
-    for(unsigned int i=0;i<4;i++){
-        for(int j=0;j<4;j++){
+    for(unsigned int i=0;i<VECTOR_SIZE;i++){
+        for(int j=0;j<VECTOR_SIZE;j++){
             result[i][j]=A[i][j]+B[i][j];
         }
     }
-    return result;
 }
 
 //gives Inverse of matrix
-matrix Inverse(matrix A){
+void Inverse(matrix A, matrix result){
     
-    matrix result(4, vect(4));
     
     //Rotation part of T is just transposing
-    for (unsigned int i=0; i<3;i++){
-        for (int j=0; j<3;j++){
+    for (unsigned int i=0; i<VECTOR_SIZE;i++){
+        for (int j=0; j<VECTOR_SIZE;j++){
             result[i][j]=A[j][i];
         }
     }
     
     //new origin std::vector is -R_T*v_old
-    for(int k=0; k<3; k++){
-        for(unsigned int i=0; i<3;i++){
+    for(int k=0; k<VECTOR_SIZE; k++){
+        for(unsigned int i=0; i<VECTOR_SIZE;i++){
             result[k][3]+=(-A[i][k])*A[i][3];
         }
     }
     //last row doesn't change
-    for(unsigned int i=0; i<4; i++){
+    for(unsigned int i=0; i<VECTOR_SIZE; i++){
         result[3][i]=A[3][i];
     }
-    return result;
 }
 
 #endif // matrix_h__
