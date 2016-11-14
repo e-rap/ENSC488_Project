@@ -107,18 +107,17 @@ double VectorDiffSum(vect a, vect b)
 }
 
 //converts User input to internal representation of frames (std::vector (x,y,z,phi) to matrix T)
-matrix UTOI(vect config){
+matrix UTOI(vect config, matrix result){
 
     config[3] = DEG2RAD(config[3]);
 
-    matrix frame(4, vect(4));
     
-    frame=  {{cos(config[3]),-sin(config[3]),0,config[0]},
+    result=  {{cos(config[3]),-sin(config[3]),0,config[0]},
             {sin(config[3]),cos(config[3]),0,config[1]},
             {0,0,1,config[2]},
             {0,0,0,1}};
     
-    return frame;
+ 
 }
 
 //converts internal to user representation of frames (matrix T to std::vector (x,y,z,phi)
