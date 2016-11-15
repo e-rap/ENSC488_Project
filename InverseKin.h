@@ -3,7 +3,7 @@
 //  InverseKin
 //
 //  Created by Eric Raposo on 2016-11-02.
-//  Copyright © 2016 Eric Raposo. All rights reserved.
+//  Copyright ï¿½ 2016 Eric Raposo. All rights reserved.
 //
 
 #ifndef InverseKin_h__
@@ -36,21 +36,24 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   double z   = DesiredPosition[2];
   double phi = DesiredPosition[3];
 
-  //if (sqrt(pow(x, 2) + pow(y, 2) > (L3 + L4)))
-  //{
-  //  sol = false;
-  //  return;
-  //}
-  //if (sqrt(pow(x, 2) + pow(y, 2) < (L3 - L4)))
-  //{
-  //  sol = false;
-  //  return;
-  //}
-  //if (z > 125 || z < 25)
-  //{
-  //  sol = false;
-  //  return;
-  //}
+  if (sqrt(pow(x, 2) + pow(y, 2) > (L3 + L4)))
+  {
+    sol = false;
+      std::cout<<"position is outside of the workspace"<<std::endl;
+    return;
+  }
+  if (sqrt(pow(x, 2) + pow(y, 2) < (L3 - L4)))
+  {
+    sol = false;
+    std::cout << "position is outside of the workspace" << std::endl;
+    return;
+  }
+  if (z > 125 || z < 25)
+  {
+    sol = false;
+    std::cout << "position is outside of the workspace" << std::endl;
+    return;
+  }
 
   // Calculated positions
   double theta1 = 0.0f, theta2 = 0.0f, d3 = 0.0f, theta4 = 0.0f;
@@ -62,13 +65,14 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   for (int sign = -1; sign <= 1; sign += 2)
   {
     double costheta2 = (pow(x, 2) + pow(y, 2) - pow(L3, 2) - pow(L4, 2)) / (2*L3*L4);
-    theta2 = RAD2DEG(atan2(sign*sqrt(1 - pow(costheta2,2)), costheta2));
+    theta2 = atan2(sign*sqrt(1 - pow(costheta2,2)), costheta2);
 
-  
-    double cosAlpha = (pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2))); 
-    double beta = RAD2DEG(atan2(y, x));
-    double alpha = RAD2DEG(atan2(sqrt(1 - pow(cosAlpha, 2)), cosAlpha));
-    theta1 = beta -1*sign* alpha;
+    //double cosAlpha = (pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2))); // DEG2RAD(acos((pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2)))));
+    //double beta = RAD2DEG(atan2(y, x));
+    //double alpha = RAD2DEG(atan2(sqrt(1 - pow(cosAlpha, 2)), cosAlpha));
+    // theta1 = beta - sign*alpha;
+    theta1= RAD2DEG(atan2(((L3+L4*cos(theta2))*y-L4*sin(theta2)*x),((L3+L4*cos(theta2))*x+L4*sin(theta2)*y)));
+    theta2= RAD2DEG(theta2);
     d3 = L1 + L2 - z - 410 - L6 - (2*L7);
     theta4 = theta1 + theta2 -phi;
 
