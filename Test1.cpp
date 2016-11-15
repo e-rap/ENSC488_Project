@@ -86,7 +86,7 @@ void InverseKin()
 
   if (sol == false)
   {
-    cout << "Desired Position Is not Possible." <<
+    cout << "Desired Position Is not Possible. " <<
       "Please input a valid Position and Orientation." << endl;
     return;
   }

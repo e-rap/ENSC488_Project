@@ -178,15 +178,15 @@ void Inverse(const matrix A, matrix& result){
     
     
     //Rotation part of T is just transposing
-    for (unsigned int i=0; i<VECTOR_SIZE;i++){
-        for (int j=0; j<VECTOR_SIZE;j++){
+    for (unsigned int i=0; i<VECTOR_SIZE-1;i++){
+        for (int j=0; j<VECTOR_SIZE-1;j++){
             result[i][j]=A[j][i];
         }
     }
     
     //new origin std::vect is -R_T*v_old
-    for(int k=0; k<VECTOR_SIZE; k++){
-        for(unsigned int i=0; i<VECTOR_SIZE;i++){
+    for(int k=0; k<VECTOR_SIZE-1; k++){
+        for(unsigned int i=0; i<VECTOR_SIZE-1;i++){
             result[k][3]+=(-A[i][k])*A[i][3];
         }
     }

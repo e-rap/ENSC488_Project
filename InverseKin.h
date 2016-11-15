@@ -36,24 +36,24 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   double z   = DesiredPosition[2];
   double phi = DesiredPosition[3];
 
-  if (sqrt(pow(x, 2) + pow(y, 2) > (L3 + L4)))
+  /*if (sqrt(pow(x, 2) + pow(y, 2)) > (L3 + L4))
   {
-    sol = false;
-      std::cout<<"position is outside of the workspace"<<std::endl;
-    return;
+  sol = false;
+  std::cout<<"position is outside of the workspace"<<std::endl;
+  return;
   }
-  if (sqrt(pow(x, 2) + pow(y, 2) < (L3 - L4)))
+  if (sqrt(pow(x, 2) + pow(y, 2)) < (L3 - L4))
   {
-    sol = false;
-    std::cout << "position is outside of the workspace" << std::endl;
-    return;
+  sol = false;
+  std::cout << "position is outside of the workspace" << std::endl;
+  return;
   }
-  if (z > 125 || z < 25)
+  if ((z > 125) || (z < 25))
   {
-    sol = false;
-    std::cout << "position is outside of the workspace" << std::endl;
-    return;
-  }
+  sol = false;
+  std::cout << "position is outside of the workspace" << std::endl;
+  return;
+  }*/
 
   // Calculated positions
   double theta1 = 0.0f, theta2 = 0.0f, d3 = 0.0f, theta4 = 0.0f;
@@ -73,7 +73,7 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
     // theta1 = beta - sign*alpha;
     theta1= RAD2DEG(atan2(((L3+L4*cos(theta2))*y-L4*sin(theta2)*x),((L3+L4*cos(theta2))*x+L4*sin(theta2)*y)));
     theta2= RAD2DEG(theta2);
-    d3 = L1 + L2 - z - 410 - L6 - (2*L7);
+    d3 = L1 + L2 - z - 410 - L6;
     theta4 = theta1 + theta2 -phi;
 
     vect solution = { theta1, theta2, d3, theta4 };
@@ -90,7 +90,7 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   //{
   //  sol = false;
   //}
-  if (sol = true)
+  if (sol == true)
   {
     // Find the Nearest and Farthest Solution wrt. the current joint config
     double nearest = 999999999; // Very Large Numbers for init purposes
@@ -145,7 +145,7 @@ void SOLVE(matrix TRelS, vect& current, vect& near, vect& far, bool& sol)
   Inverse(BRelS, SRelB);
   Inverse(TRelW, WRelT);
   Multiply(SRelB, TRelS, TRelB);
-  Multiply(TRelB, WRelT, WRelB);
+  Multiply(TRelB, TRelW/* TODO: Should Be WRelT BUT ITS NOT??????? */, WRelB); //TODO: FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   //matrix WRelB = Multiply(Multiply(Inverse(BRelS), TRelS),Inverse(TRelW));
 

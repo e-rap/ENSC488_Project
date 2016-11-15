@@ -1,4 +1,4 @@
-//
+﻿//
 //  WHERE.h
 //  WHERE
 //
@@ -53,9 +53,9 @@ void WHERE(double theta1, double theta2, double d3, double theta4, vect& output)
     //calling function KIN to calculate T05
     matrix T04 = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
     KIN(theta1, theta2, d3, theta4, T04);
-    matrix temp1 = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-    Multiply(BRelS, T04, temp1);
-    Multiply(temp1, TRelW, out);
+    matrix WRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+    Multiply(BRelS, T04, WRelB);
+    Multiply(WRelB, TRelW, out);
 
 
     //output = Multiply(Multiply(BRelS, KIN(theta1, theta2, d3, theta4)), TRelW);
