@@ -66,12 +66,10 @@ bool D3Check(double dist)
 
 void JointToVect(JOINT joint, vect& vector)
 {
-  vect result;
   for (int i = 0; i < NUM_OF_LINK_VARS; i++)
   {
-    result.push_back(joint[i]);
+    vector[i] = joint[i];
   }
-  vector = result;
 }
 
 void VectToJoint(vect vector, JOINT& joint)
@@ -87,14 +85,5 @@ void GetCurrentConfig(vect& cur_config)
   JOINT config;
   GetConfiguration(config);
   JointToVect(config, cur_config);
-}
-
-vect GetCurrentConfig()
-{
-  JOINT config;
-  vect cur_config;
-  GetConfiguration(config);
-  JointToVect(config, cur_config);
-  return cur_config;
 }
 #endif // RobotGlobals_h__

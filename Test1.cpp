@@ -16,7 +16,7 @@ bool gGrasp = false;
 
 void ForwardKin()
 {
-  double theta1, theta2, d3, theta4;
+  double theta1 = 0, theta2 = 0, d3 = 0, theta4 = 0;
 
   std::cout << "Please enter the first joint variable THETA1" << std::endl;
   std::cin >> theta1;
@@ -28,11 +28,12 @@ void ForwardKin()
   std::cin >> theta4;
   std::cout << std::endl << std::endl;
 
-  vect CurPositionVect = WHERE(theta1, theta2, d3, theta4);
+  vect CurPositionVect = { 0, 0, 0, 0 };
+  WHERE(theta1, theta2, d3, theta4,CurPositionVect);
   cout << "Calculated tool frame relative to the station \n";
   DisplayV(CurPositionVect);
 
-  char answer;
+  char answer = 0x0;
   cout << "Would you like the robot to move there?\n Y or N\n>";
   cin >> answer;
 
@@ -57,12 +58,12 @@ void ForwardKin()
 
 void InverseKin()
 {
-  vect DesiredPosition(4);
-  vect near_sol;
-  vect far_sol;
+  vect DesiredPosition = { 0, 0, 0, 0 };
+  vect near_sol = { 0, 0, 0, 0 };
+  vect far_sol = { 0, 0, 0, 0 };
   bool sol = false;
   int select = 0;
-  JOINT config;
+  JOINT config = { 0, 0, 0, 0 };
 
   cout << "Input the configuration for the tool frame relative to the station frame." << endl;
   cout << "x position >";
@@ -79,7 +80,9 @@ void InverseKin()
   cout << endl << endl;
   cout << "Calculating Joint Parameters" << endl;
   GetCurrentConfig(gCurrentConfig);
-  SOLVE(UTOI(DesiredPosition), gCurrentConfig, near_sol, far_sol, sol);
+  matrix DesiredPositionMatrix = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+  UTOI(DesiredPosition, DesiredPositionMatrix);
+  SOLVE(DesiredPositionMatrix, gCurrentConfig, near_sol, far_sol, sol);
 
   if (sol == false)
   {
@@ -126,42 +129,42 @@ void InverseKin()
 
 void PickAndPlaceHelper()
 {
-  vect desiredPosition1(4);
-  vect desiredPosition2(4);
-  double height;
+  //vect desiredPosition1 = { 0, 0, 0, 0 };
+  //vect desiredPosition2 = { 0, 0, 0, 0 };
+  //double height = 0.0f;
 
-  cout << "Input the current object frame." << endl;
-  cout << "x position >";
-  cin >> desiredPosition1[0];
-  cout << endl;
-  cout << "y position >";
-  cin >> desiredPosition1[1];
-  cout << endl;
-  cout << "z position >";
-  cin >> desiredPosition1[2];
-  cout << endl;
-  cout << "phi angle >";
-  cin >> desiredPosition1[3];
-  cout << endl << endl;
+  //cout << "Input the current object frame." << endl;
+  //cout << "x position >";
+  //cin >> desiredPosition1[0];
+  //cout << endl;
+  //cout << "y position >";
+  //cin >> desiredPosition1[1];
+  //cout << endl;
+  //cout << "z position >";
+  //cin >> desiredPosition1[2];
+  //cout << endl;
+  //cout << "phi angle >";
+  //cin >> desiredPosition1[3];
+  //cout << endl << endl;
 
-  cout << "Input the goal frame." << endl;
-  cout << "x position >";
-  cin >> desiredPosition2[0];
-  cout << endl;
-  cout << "y position >";
-  cin >> desiredPosition2[1];
-  cout << endl;
-  cout << "z position >";
-  cin >> desiredPosition2[2];
-  cout << endl;
-  cout << "phi angle >";
-  cin >> desiredPosition2[3];
-  cout << endl << endl;
+  //cout << "Input the goal frame." << endl;
+  //cout << "x position >";
+  //cin >> desiredPosition2[0];
+  //cout << endl;
+  //cout << "y position >";
+  //cin >> desiredPosition2[1];
+  //cout << endl;
+  //cout << "z position >";
+  //cin >> desiredPosition2[2];
+  //cout << endl;
+  //cout << "phi angle >";
+  //cin >> desiredPosition2[3];
+  //cout << endl << endl;
 
-  cout << "Input Object height\n>";
-  cin >> height;
+  //cout << "Input Object height\n>";
+  //cin >> height;
 
-  PickAndPlace(desiredPosition1, desiredPosition2, height);
+  //PickAndPlace(desiredPosition1, desiredPosition2, height);
 }
 
 void InitRobot()

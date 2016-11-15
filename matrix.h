@@ -7,10 +7,10 @@
 //
 //How to use functions:
 //
-//  UTOI: User to Interface UTOI(configuration std::vector (x,y,z,phi))=T matrix of frame
-//  ITOU: Interface to User ITOU(matrix A)=configuration std::vector (x,y,z,phi)
+//  UTOI: User to Interface UTOI(configuration std::vect (x,y,z,phi))=T matrix of frame
+//  ITOU: Interface to User ITOU(matrix A)=configuration std::vect (x,y,z,phi)
 //  DisplayM(matrix A)-> output A
-//  DisplayV(std::vector v)-> output v
+//  DisplayV(std::vect v)-> output v
 //  Multiply(matrix A,matrix B) = A * B
 //  Add(matrix A, matrix B) = A + B
 //  Inverse(matrix A)=A^-1
@@ -18,24 +18,47 @@
 //
 //How to initialize a 4x4 matrix A:
 //
-//  matrix A(4, std::vector<double>(4));
+//  matrix A(4, std::vect<double>(4));
 //  A={{x,x,x,x},{x,x,x,x},{x,x,x,x},{x,x,x,x}};
 //
 //
-//How to initialize a 4 std::vector v:
+//How to initialize a 4 std::vect v:
 //
-//  std::vector<double> v(4);
+//  std::vect<double> v(4);
 //  v={x,x,x,x};
 
 
 #define  VECTOR_SIZE 4
 
 #include <iostream>
-#include <vector>
 #include <cmath>
+#include "ensc-488.h"
 
-using vect = double[VECTOR_SIZE];
-using matrix = vect[VECTOR_SIZE]; //matrix is std::vector of std::vector
+
+typedef double vect[VECTOR_SIZE];
+
+typedef double matrix[VECTOR_SIZE][VECTOR_SIZE];
+
+// copies matrix a into matrix b
+void MatrixCopy(matrix a, matrix& b)
+{
+  for (int i = 0; i < VECTOR_SIZE; i++)
+  {
+    for (int j = 0; j < VECTOR_SIZE; j++)
+    {
+      b[i][j] = a[i][j];
+    }
+  }
+}
+
+// copies Vector a into Vector b
+void VectorCopy(vect a, vect& b)
+{
+  for (int i = 0; i < VECTOR_SIZE; i++)
+  {
+    b[i] = a[i];
+  }
+}
 
 // Add two Vectors
 void VectorAdd(vect a, vect b, vect& output)
@@ -47,7 +70,7 @@ void VectorAdd(vect a, vect b, vect& output)
 }
 
 // Subtract two vectors
-void VectorSub(vect a, vect b, vect& output)
+void VectorSub(const vect a, const vect b, vect& output)
 {
   for (unsigned int i = 0; i < VECTOR_SIZE; i++)
   {
@@ -55,8 +78,8 @@ void VectorSub(vect a, vect b, vect& output)
   }
 }
 
-// Multiply vector by scalar
-void VectorMulS(vect a, double constant, vect& output)
+// Multiply vect by scalar
+void VectorMulS(const vect a, double constant, vect& output)
 {
   for (unsigned int i = 0; i < VECTOR_SIZE; i++)
   {
@@ -64,8 +87,8 @@ void VectorMulS(vect a, double constant, vect& output)
   }
 }
 
-// Magnitude of the vector
-double VectorMag(vect a)
+// Magnitude of the vect
+double VectorMag(const vect a)
 {
   double sum = 0.0f;
   for (unsigned int i = 0; i < VECTOR_SIZE; i++)
@@ -75,8 +98,8 @@ double VectorMag(vect a)
   return sqrt(sum);
 }
 
-// The sum of the difference of each vector component
-double VectorDiffSum(vect a, vect b)
+// The sum of the difference of each vect component
+double VectorDiffSum(const vect a, const vect b)
 {
 
   double sum = 0.0f;
@@ -87,34 +110,31 @@ double VectorDiffSum(vect a, vect b)
   return sum;
 }
 
-//converts User input to internal representation of frames (std::vector (x,y,z,phi) to matrix T)
-matrix UTOI(vect config, matrix result){
+//converts User input to internal representation of frames ((x,y,z,phi) to matrix T)
+void UTOI(vect config, matrix& result){
 
     config[3] = DEG2RAD(config[3]);
 
-    
-    result=  {{cos(config[3]),-sin(config[3]),0,config[0]},
+    matrix temp =  {{cos(config[3]),-sin(config[3]),0,config[0]},
             {sin(config[3]),cos(config[3]),0,config[1]},
             {0,0,1,config[2]},
             {0,0,0,1}};
-    
- 
+
+    MatrixCopy(temp, result);
 }
 
-//converts internal to user representation of frames (matrix T to std::vector (x,y,z,phi)
-void ITOU(matrix frame, vector result){
-    
-  
-    result={frame[0][3],frame[1][3],frame[2][3],RAD2DEG(atan2(frame[1][0],frame[0][0]))};
-    
-    
+//converts internal to user representation of frames (matrix to vect (x,y,z,phi)
+void ITOU(const matrix frame, vect& result){
+
+  vect temp = { frame[0][3], frame[1][3], frame[2][3], RAD2DEG(atan2(frame[1][0],frame[0][0]))};
+  VectorCopy(temp, result);
 }
 
 //Displays matrix
-void DisplayM(matrix A){
+void DisplayM(const matrix A){
     
-    for(unsigned int i=0;i<A.size();i++){
-        for(int j=0;j<A[0].size();j++){
+    for(unsigned int i=0;i<VECTOR_SIZE;i++){
+        for(int j=0;j<VECTOR_SIZE;j++){
             std::cout << A[i][j] << "   ";
         }
         std::cout << std::endl;
@@ -122,8 +142,8 @@ void DisplayM(matrix A){
     std::cout << std::endl;
 }
 
-//Displays std::vector
-void DisplayV(vect vector){
+//Displays std::vect
+void DisplayV(const vect vector){
     
     for(unsigned int i=0; i<VECTOR_SIZE; i++){
         std::cout<<vector[i]<< "   ";
@@ -132,22 +152,19 @@ void DisplayV(vect vector){
 }
 
 //Multiplies 2 matrices
-void Multiply(matrix A, matrix B, matrix result){
-    
-    matrix result(4, vect(4));
-    
+void Multiply(const matrix A, const matrix B, matrix& result){
+   
     for(unsigned int i=0;i<VECTOR_SIZE;i++){
         for(int j=0;j<VECTOR_SIZE;j++){
             for(int k=0;k<VECTOR_SIZE;k++){
                 result[i][j]+=A[i][k]*B[k][j];
             }            
         }
-    }
-    
+    }  
 }
 
 //Adds two matrices
-void Add(matrix A, matrix B, matrix result){
+void Add(const matrix A, const matrix B, matrix& result){
     
     for(unsigned int i=0;i<VECTOR_SIZE;i++){
         for(int j=0;j<VECTOR_SIZE;j++){
@@ -157,7 +174,7 @@ void Add(matrix A, matrix B, matrix result){
 }
 
 //gives Inverse of matrix
-void Inverse(matrix A, matrix result){
+void Inverse(const matrix A, matrix& result){
     
     
     //Rotation part of T is just transposing
@@ -167,7 +184,7 @@ void Inverse(matrix A, matrix result){
         }
     }
     
-    //new origin std::vector is -R_T*v_old
+    //new origin std::vect is -R_T*v_old
     for(int k=0; k<VECTOR_SIZE; k++){
         for(unsigned int i=0; i<VECTOR_SIZE;i++){
             result[k][3]+=(-A[i][k])*A[i][3];

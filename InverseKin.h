@@ -15,6 +15,8 @@
 #include <limits.h>
 #include "ensc-488.h"
 
+#define MAX_NUM_SOLUTIONS 2
+
 // INVKIN - Inverse Kinematics Function 
 // @input  WrelB   - T matrix of the tool frame relative to the base frame
 // @input  current - current joint states {theta1,theta2,d3,theta4}  
@@ -23,8 +25,12 @@
 // @output sol     - true of solutions exist otherwise false {theta1,theta2,d3,theta4}
 void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
 {
+  sol = false;
+
   // Relative to the base Frame
-  vect DesiredPosition = ITOU(WrelB);
+  vect DesiredPosition = { 0, 0, 0, 0 };
+  ITOU(WrelB,DesiredPosition);
+
   double x   = DesiredPosition[0];
   double y   = DesiredPosition[1];
   double z   = DesiredPosition[2];
@@ -50,7 +56,7 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   double theta1 = 0.0f, theta2 = 0.0f, d3 = 0.0f, theta4 = 0.0f;
 
   // Vector containing valid solutions
-  std::vector< vect> solutions;
+  vect solutions[MAX_NUM_SOLUTIONS] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }};
 
   // Inverse calculation
   for (int sign = -1; sign <= 1; sign += 2)
@@ -59,10 +65,10 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
     theta2 = RAD2DEG(atan2(sign*sqrt(1 - pow(costheta2,2)), costheta2));
 
   
-    double cosAlpha = (pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2))); // DEG2RAD(acos((pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2)))));    
+    double cosAlpha = (pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2))); 
     double beta = RAD2DEG(atan2(y, x));
-    double alpha = RAD2DEG(atan2(-1*sign*sqrt(1 - pow(cosAlpha, 2)), cosAlpha));
-    theta1 = beta + alpha;
+    double alpha = RAD2DEG(atan2(sqrt(1 - pow(cosAlpha, 2)), cosAlpha));
+    theta1 = beta -1*sign* alpha;
     d3 = L1 + L2 - z - 410 - L6 - (2*L7);
     theta4 = theta1 + theta2 -phi;
 
@@ -71,38 +77,42 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
     // Make sure solution is valid
     if (Theta1Check(theta1) && Theta2Check(theta2) && Theta4Check(theta4) && D3Check(d3))
     {
-      solutions.push_back(solution);
+      VectorCopy(solution, solutions[(sign + 1) / 2]);
+      sol = true;
     }
-
   }
   
-  if (solutions.size() == 0)
+  //if (solutions.size() == 0)
+  //{
+  //  sol = false;
+  //}
+  if (sol = true)
   {
-    sol = false;
-  }
-  else
-  {
-    sol = true;
-
     // Find the Nearest and Farthest Solution wrt. the current joint config
-    double nearest = std::numeric_limits<double>::max();
-    double farthest = std::numeric_limits<double>::min();
-    for (unsigned int i = 0; i < solutions.size(); i++)
+    double nearest = 999999999; // Very Large Numbers for init purposes
+    double farthest = -999999999; // Very Small number for init purposes 
+    for (unsigned int i = 0; i < MAX_NUM_SOLUTIONS; i++)
     {
+      // Invalid Solution if Vector is all 0 (d3 cannot be equal to 0)
+      if (solutions[i][2] == 0)
+      {
+        continue;
+      }
+
       double diffsum = VectorDiffSum(solutions[i], current);
       if (diffsum > farthest)
       {
         farthest = diffsum;
-        far = solutions[i];
+        VectorCopy(solutions[i], far);
       }
       if (diffsum < nearest)
       {
         nearest = diffsum;
-        near = solutions[i];
+        VectorCopy(solutions[i], near);
       }
     }
   }
-
+    
   return;
 }
 
@@ -119,7 +129,22 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
 
 void SOLVE(matrix TRelS, vect& current, vect& near, vect& far, bool& sol)
 {
-  matrix WRelB = Multiply(Multiply(Inverse(BRelS), TRelS),Inverse(TRelW));
+  matrix SRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+  matrix WRelT = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+
+  matrix TRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+
+  matrix WRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+
+
+  // WRelB = (SRelB * TRelS) * WRelT 
+  Inverse(BRelS, SRelB);
+  Inverse(TRelW, WRelT);
+  Multiply(SRelB, TRelS, TRelB);
+  Multiply(TRelB, WRelT, WRelB);
+
+  //matrix WRelB = Multiply(Multiply(Inverse(BRelS), TRelS),Inverse(TRelW));
+
   INVKIN(WRelB, current, near, far, sol);
 }
 
