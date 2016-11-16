@@ -64,15 +64,6 @@ bool D3Check(double dist)
   return ((dist > D3_MAX || dist < D3_MIN) ? false : true);
 }
 
-void JointToVect(JOINT joint, vect& vector)
-{
-  for (int i = 0; i < NUM_OF_LINK_VARS; i++)
-  {
-    vector[i] = joint[i];
-  }
-}
-
-// Limit Check Functions //
 bool Theta1Check2(double ang)
 {
   return ((ang >= THETA1_MAX || ang <= THETA1_MIN) ? false : true);

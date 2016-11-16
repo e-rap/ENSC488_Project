@@ -30,6 +30,10 @@ void ForwardKin()
 
   vect CurPositionVect = { 0, 0, 0, 0 };
   WHERE(theta1, theta2, d3, theta4,CurPositionVect);
+  if (CurPositionVect[2] == 0)
+  {
+    return;
+  }
   cout << "Calculated tool frame relative to the station \n";
   DisplayV(CurPositionVect);
 

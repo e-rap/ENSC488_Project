@@ -48,7 +48,7 @@ void INVKIN(matrix T_BW, vect current, vect& near, vect& far, bool& sol)
   std::cout << "position is outside of the workspace" << std::endl;
   return;
   }
-  if ((z > 125) || (z < 25))
+  if ((z > 185) || (z < 85))
   {
   sol = false;
   std::cout << "position is outside of the workspace" << std::endl;
