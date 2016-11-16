@@ -70,6 +70,7 @@
     <ClInclude Include="PickAndPlace.h" />
     <ClInclude Include="RobotGlobals.h" />
     <ClInclude Include="stateid.h" />
+    <ClInclude Include="TrajectoryPlanning.h" />
     <ClInclude Include="WHERE.h" />
   </ItemGroup>
   <ItemGroup>

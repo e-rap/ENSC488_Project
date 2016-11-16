@@ -72,6 +72,35 @@ void JointToVect(JOINT joint, vect& vector)
   }
 }
 
+// Limit Check Functions //
+bool Theta1Check2(double ang)
+{
+  return ((ang >= THETA1_MAX || ang <= THETA1_MIN) ? false : true);
+}
+
+bool Theta2Check2(double ang)
+{
+  return ((ang >= THETA2_MAX || ang <= THETA2_MIN) ? false : true);
+}
+
+bool Theta4Check2(double ang)
+{
+  return ((ang >= THETA4_MAX || ang <= THETA4_MIN) ? false : true);
+}
+
+bool D3Check2(double dist)
+{
+  return ((dist >= D3_MAX || dist <= D3_MIN) ? false : true);
+}
+
+void JointToVect(JOINT joint, vect& vector)
+{
+  for (int i = 0; i < NUM_OF_LINK_VARS; i++)
+  {
+    vector[i] = joint[i];
+  }
+}
+
 void VectToJoint(vect vector, JOINT& joint)
 {
   for (int i = 0; i < NUM_OF_LINK_VARS; i++)
