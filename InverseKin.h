@@ -23,20 +23,20 @@
 // @output near    - nearest solution wrt current position {theta1,theta2,d3,theta4}
 // @output far     - farthest solution wrt current position {theta1,theta2,d3,theta4}
 // @output sol     - true of solutions exist otherwise false {theta1,theta2,d3,theta4}
-void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
+void INVKIN(matrix T_BW, vect current, vect& near, vect& far, bool& sol)
 {
   sol = false;
 
   // Relative to the base Frame
   vect DesiredPosition = { 0, 0, 0, 0 };
-  ITOU(WrelB,DesiredPosition);
+  ITOU(T_BW,DesiredPosition);
 
   double x   = DesiredPosition[0];
   double y   = DesiredPosition[1];
   double z   = DesiredPosition[2];
   double phi = DesiredPosition[3];
 
-  /*if (sqrt(pow(x, 2) + pow(y, 2)) > (L3 + L4))
+  if (sqrt(pow(x, 2) + pow(y, 2)) > (L3 + L4))
   {
   sol = false;
   std::cout<<"position is outside of the workspace"<<std::endl;
@@ -53,7 +53,7 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   sol = false;
   std::cout << "position is outside of the workspace" << std::endl;
   return;
-  }*/
+  }
 
   // Calculated positions
   double theta1 = 0.0f, theta2 = 0.0f, d3 = 0.0f, theta4 = 0.0f;
@@ -66,11 +66,6 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
   {
     double costheta2 = (pow(x, 2) + pow(y, 2) - pow(L3, 2) - pow(L4, 2)) / (2*L3*L4);
     theta2 = atan2(sign*sqrt(1 - pow(costheta2,2)), costheta2);
-
-    //double cosAlpha = (pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2))); // DEG2RAD(acos((pow(x, 2) + pow(y, 2) + pow(L3, 2) - pow(L4, 2)) / (2 * L3*sqrt(pow(x, 2) + pow(y, 2)))));
-    //double beta = RAD2DEG(atan2(y, x));
-    //double alpha = RAD2DEG(atan2(sqrt(1 - pow(cosAlpha, 2)), cosAlpha));
-    // theta1 = beta - sign*alpha;
     theta1= RAD2DEG(atan2(((L3+L4*cos(theta2))*y-L4*sin(theta2)*x),((L3+L4*cos(theta2))*x+L4*sin(theta2)*y)));
     theta2= RAD2DEG(theta2);
     d3 = L1 + L2 - z - 410 - L6;
@@ -131,25 +126,21 @@ void INVKIN(matrix WrelB, vect current, vect& near, vect& far, bool& sol)
 //globally defined variables or constants.SOLVE should use calls to TMULT, TINVERT,
 //and INVKIN.
 
-void SOLVE(matrix TRelS, vect& current, vect& near, vect& far, bool& sol)
+void SOLVE(matrix T_ST, vect& current, vect& near, vect& far, bool& sol)
 {
-  matrix SRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-  matrix WRelT = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+  matrix T_BS = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+  matrix T_TW = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
 
-  matrix TRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+  matrix T_BT = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
 
-  matrix WRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+  matrix T_BW = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
 
 
-  // WRelB = (SRelB * TRelS) * WRelT 
-  Inverse(BRelS, SRelB);
-  Inverse(TRelW, WRelT);
-  Multiply(SRelB, TRelS, TRelB);
-  Multiply(TRelB, TRelW/* TODO: Should Be WRelT BUT ITS NOT??????? */, WRelB); //TODO: FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-  //matrix WRelB = Multiply(Multiply(Inverse(BRelS), TRelS),Inverse(TRelW));
-
-  INVKIN(WRelB, current, near, far, sol);
+  Inverse(T_SB, T_BS); // T_BS
+  Inverse(T_WT, T_TW); // T_TW
+  Multiply(T_BS, T_ST, T_BT); // T_BS * T_ST = T_BT
+  Multiply(T_BT, T_TW, T_BW); // T_BT * T_TW = T_BW
+  INVKIN(T_BW, current, near, far, sol);
 }
 
 

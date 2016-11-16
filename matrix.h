@@ -117,7 +117,7 @@ void UTOI(vect config, matrix& result){
 
     matrix temp =  {{cos(config[3]),-sin(config[3]),0,config[0]},
             {sin(config[3]),cos(config[3]),0,config[1]},
-            {0,0,1,config[2]},
+            {0,0,-1,config[2]},
             {0,0,0,1}};
 
     MatrixCopy(temp, result);

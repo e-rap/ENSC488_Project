@@ -54,9 +54,8 @@ void WHERE(double theta1, double theta2, double d3, double theta4, vect& output)
     matrix T04 = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
     KIN(theta1, theta2, d3, theta4, T04);
     matrix WRelB = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-    Multiply(BRelS, T04, WRelB);
-    Multiply(WRelB, TRelW, out);
-
+    Multiply(T_SB, T04, WRelB);
+    Multiply(WRelB, T_WT, out);
 
     //output = Multiply(Multiply(BRelS, KIN(theta1, theta2, d3, theta4)), TRelW);
   }
