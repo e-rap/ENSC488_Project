@@ -17,23 +17,23 @@
 // Throws Exception At singularities 
 void JointVel2CartVel(vect JointConfig, vect JointVel, vect& CartVel)
 {
-
+    
+    double a= -L3*sin(DEG2RAD(JointConfig[0])) - L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    double b= -L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    double c= L3*cos(DEG2RAD(JointConfig[0])) + L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    double d= L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    
   // calculated the 2x2 det for x y theta1 theta2
-  double det = (-L3*sin(DEG2RAD(JointConfig[0])) - L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1])))
-               *(L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1]))) + L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1]))
-               *(L3*cos(DEG2RAD(JointConfig[0])) + L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1])));
-
+    double det = a*d-b*c;
   // Check if at a singularity
   if (det == 0 || JointConfig[2] == -100 || JointConfig[2] == -200 || Theta1Check2(JointConfig[0]) || Theta2Check2(JointConfig[1]) || D3Check2(JointConfig[2]) || Theta2Check2(JointConfig[3]))
   {
     throw std::exception("Encountered Boundary singularity!");
+    return;
   }
-
-  CartVel[0] = (-L3*sin(DEG2RAD(JointConfig[0])) - L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1]))) * JointVel[0] 
-                - L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1])) * JointVel[1];
-
-  CartVel[1] = (L3*cos(DEG2RAD(JointConfig[0])) + L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1]))) * JointVel[0]
-    + L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1])) * JointVel[1];
+  //apply Jacobian
+  CartVel[0] = a * JointVel[0]+b * JointVel[1];
+  CartVel[1] = a * JointVel[0]+ b * JointVel[1];
   CartVel[2] = -JointVel[2];
   CartVel[3] = JointVel[0] + JointVel[1] - JointVel[3];
 }
@@ -55,20 +55,60 @@ void CartVel2JointVel(vect CartConfig, vect CartVel, vect& JointVel)
   bool sol = false;
   SOLVE(CartConfigMatrix, CartConfig, JointConfig, far_sol, sol);
 
-  JointVel[0] = (cos(DEG2RAD(JointConfig[0] + JointConfig[1])) / (L3*sin(DEG2RAD(JointConfig[1]))))*CartVel[0] + (sin(DEG2RAD(JointConfig[0] + JointConfig[1])) / (L3*sin(DEG2RAD(JointConfig[1]))))*CartVel[1];
-  JointVel[1] = (-(L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1])) + L3*cos(DEG2RAD(JointConfig[0]))) / (L3*L4*sin(DEG2RAD(JointConfig[1]))))*CartVel[0] + (-(L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1])) + L3*sin(DEG2RAD(JointConfig[0]))) / (L3*L4*sin(DEG2RAD(JointConfig[1]))))* CartVel[1];
-  JointVel[2] = -CartVel[2];
-  JointVel[3] = JointVel[0] + JointVel[1] - CartVel[3];
+    //calculate Jacobian
+    double a= -L3*sin(DEG2RAD(JointConfig[0])) - L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    double b= -L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    double c= L3*cos(DEG2RAD(JointConfig[0])) + L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    double d= L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1]));
+    
+    double det = a*d-b*c;
+    
+    //compute Inverse of 2x2 Jacobian
+    double A=a/det;
+    double B=-b/det;
+    double C=-c/det;
+    double D=d/det;
+    
+    double detinverse=A*D-B*C;
+    
+    //Check for singularities
+    if (det == 0 || detinverse==0 || JointConfig[2] == -100 || JointConfig[2] == -200 || Theta1Check2(JointConfig[0]) || Theta2Check2(JointConfig[1]) || D3Check2(JointConfig[2]) || Theta2Check2(JointConfig[3]))
+    {
+        throw std::exception("Encountered Boundary singularity!");
+        return;
+    }
+    
+    //apply inverse Jacobian
+    
+    JointVel[0]= A * CartVel[0] + B * CartVel[1];
+    JointVel[1]= C * CartVel[0] + D * CartVel[1];
+    JointVel[2]= -CartVel[2];
+    JointVel[3]= JointVel[0] + JointVel[1] - CartVel[3];
 
-  double det = (-L3*sin(DEG2RAD(JointConfig[0])) - L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1])))
+
+    /*JointVel[0] = (cos(DEG2RAD(JointConfig[0] + JointConfig[1])) / (L3*sin(DEG2RAD(JointConfig[1]))))*CartVel[0] + (sin(DEG2RAD(JointConfig[0] + JointConfig[1])) / (L3*sin(DEG2RAD(JointConfig[1]))))*CartVel[1];
+    JointVel[1] = (-(L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1])) + L3*cos(DEG2RAD(JointConfig[0]))) / (L3*L4*sin(DEG2RAD(JointConfig[1]))))*CartVel[0] + (-(L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1])) + L3*sin(DEG2RAD(JointConfig[0]))) / (L3*L4*sin(DEG2RAD(JointConfig[1]))))* CartVel[1];
+    JointVel[2] = -CartVel[2];
+    JointVel[3] = JointVel[0] + JointVel[1] - CartVel[3];
+    */
+ /* double det = (-L3*sin(DEG2RAD(JointConfig[0])) - L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1])))
     *(L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1]))) + L4*sin(DEG2RAD(JointConfig[0] + JointConfig[1]))
-    *(L3*cos(DEG2RAD(JointConfig[0])) + L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1])));
+    *(L3*cos(DEG2RAD(JointConfig[0])) + L4*cos(DEG2RAD(JointConfig[0] + JointConfig[1])));*/
 
-  // Check if at a singularity
-  if (det == 0 || JointConfig[2] == -100 || JointConfig[2] == -200 || Theta1Check2(JointConfig[0]) || Theta2Check2(JointConfig[1]) || D3Check2(JointConfig[2]) || Theta2Check2(JointConfig[3]))
-  {
-    throw std::exception("Encountered Boundary singularity!");
-  }
+  //// Check if at a singularity
+  //if (det == 0 || JointConfig[2] == -100 || JointConfig[2] == -200 || Theta1Check2(JointConfig[0]) || Theta2Check2(JointConfig[1]) || D3Check2(JointConfig[2]) || Theta2Check2(JointConfig[3]))
+  //{
+  //  throw std::exception("Encountered Boundary singularity!");
+  //}
 }
 
 #endif // TrajectoryPlanning_h__
+
+
+
+
+
+
+
+
+
