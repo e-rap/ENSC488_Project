@@ -85,7 +85,7 @@ void InverseKin()
   cout << "Calculating Joint Parameters" << endl;
   GetCurrentConfig(gCurrentConfig);
   matrix DesiredPositionMatrix = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
-  UTOI(DesiredPosition, DesiredPositionMatrix);
+  U2I(DesiredPosition, DesiredPositionMatrix);
   SOLVE(DesiredPositionMatrix, gCurrentConfig, near_sol, far_sol, sol);
 
   if (sol == false)

@@ -66,7 +66,7 @@ void WHERE(double theta1, double theta2, double d3, double theta4, vect& output)
   }
 
   //converting matrix into vector for user
-  ITOU(out, v);
+  I2U(out, v);
   VectorCopy(v, output);
 }
 

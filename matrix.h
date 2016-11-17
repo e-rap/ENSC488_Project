@@ -111,7 +111,7 @@ double VectorDiffSum(const vect a, const vect b)
 }
 
 //converts User input to internal representation of frames ((x,y,z,phi) to matrix T)
-void UTOI(vect config, matrix& result){
+void U2I(vect config, matrix& result){
 
     config[3] = DEG2RAD(config[3]);
 
@@ -124,7 +124,7 @@ void UTOI(vect config, matrix& result){
 }
 
 //converts internal to user representation of frames (matrix to vect (x,y,z,phi)
-void ITOU(const matrix frame, vect& result){
+void I2U(const matrix frame, vect& result){
 
   vect temp = { frame[0][3], frame[1][3], frame[2][3], RAD2DEG(atan2(frame[1][0],frame[0][0]))};
   VectorCopy(temp, result);

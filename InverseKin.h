@@ -29,7 +29,7 @@ void INVKIN(matrix T_BW, vect current, vect& near, vect& far, bool& sol)
 
   // Relative to the base Frame
   vect DesiredPosition = { 0, 0, 0, 0 };
-  ITOU(T_BW,DesiredPosition);
+  I2U(T_BW,DesiredPosition);
 
   double x   = DesiredPosition[0];
   double y   = DesiredPosition[1];
@@ -126,7 +126,7 @@ void INVKIN(matrix T_BW, vect current, vect& near, vect& far, bool& sol)
 //globally defined variables or constants.SOLVE should use calls to TMULT, TINVERT,
 //and INVKIN.
 
-void SOLVE(matrix T_ST, vect& current, vect& near, vect& far, bool& sol)
+void SOLVE(matrix T_ST, vect current, vect& near, vect& far, bool& sol)
 {
   matrix T_BS = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
   matrix T_TW = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
