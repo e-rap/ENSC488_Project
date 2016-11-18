@@ -2,20 +2,33 @@
 //
 //void main()
 //{
-//  matrix paramx;
-//  matrix paramy;
-//  matrix paramz;
-//  matrix paramphi;
-//  MatrixInit(paramx);
-//  MatrixInit(paramy);
-//  MatrixInit(paramz);
-//  MatrixInit(paramphi);
+//	StopRobot();
+//	ResetRobot();
+//	OpenMonitor();
+//	vect JointConfigArray[5];
+//	vect JointVelArray[5];
+//	vect JointAccArray[5];
+//	Sleep(2000);
+//	for (int i = 0; i < 5; i++)
+//	{
+//		VectorInit(JointConfigArray[i]);
+//		VectorInit(JointVelArray[i]);
+//		VectorInit(JointAccArray[i]);
+//		for (int j = 0; j < 4; j++)
+//		{
+//			JointVelArray[i][j] = 18.0/5;
+//			if ((i == 0) && (j == 2))
+//			{
+//				JointConfigArray[i][j] += -200;
 //
-//  double times[5] = { 0, 5, 10, 15, 20 };
-//  double viax[5] = { 0, 5, 10, 15, 20 };
-//  double viay[5] = { 0, 5, 10, 15, 20 };
-//  double viaz[5] = { 0, 5, 10, 15, 20 };
-//  double viaphi[5] = { 0, 0, 0, 0, 0 };
-//  TraGen(times, viax, viay, viaz, viaphi, paramx, paramy, paramz, paramphi, 5);
+//			}
+//			else
+//			{
+//				JointConfigArray[i][j] += 18.0/5;
+//			}
+//
+//		}
+//	}
+//	TraExec(JointConfigArray, JointVelArray, JointAccArray, 0.2, 5);
 //
 //}

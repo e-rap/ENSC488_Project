@@ -7,19 +7,27 @@
 #include <cmath>
 #include "InverseKin.h"
 #include <fstream>
+#include <windows.h>
+
+#define S_TO_MICROS 1000000.0
 
 #define MAX_VIA_POINTS 5
 #define SAMPLING_RATE 60
 #define MAX_TIME 60
 #define MAX_DATA_POINTS SAMPLING_RATE*MAX_TIME
 
-// Description : Uses the Jacobian to convert joint space velocities to Cartesian space velocities
-// Inputs:
-//   JointConfig - Joint Configuration State (theta1,theta2,d3,theta4)
-//   JointVel    - Current Joint Velocities (theta1dot, theta2dot, V3, theta4dot)
-// Outputs:
-//   CartVel     - Cartesian velocities (Vx, Vy, Vz, phidot)
-// Throws Exception At singularities
+void usleep(__int64 usec)
+{
+	HANDLE timer;
+	LARGE_INTEGER ft;
+
+	ft.QuadPart = -(10 * usec); // Convert to 100 nanosecond interval, negative value indicates relative time
+
+	timer = CreateWaitableTimer(NULL, TRUE, NULL);
+	SetWaitableTimer(timer, &ft, 0, NULL, NULL, 0);
+	WaitForSingleObject(timer, INFINITE);
+	CloseHandle(timer);
+}
 
 //Read Via points from text file "viapoints"
 void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5]) {
@@ -55,6 +63,13 @@ void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double
     }
 }
 
+// Description : Uses the Jacobian to convert joint space velocities to Cartesian space velocities
+// Inputs:
+//   JointConfig - Joint Configuration State (theta1,theta2,d3,theta4)
+//   JointVel    - Current Joint Velocities (theta1dot, theta2dot, V3, theta4dot)
+// Outputs:
+//   CartVel     - Cartesian velocities (Vx, Vy, Vz, phidot)
+// Throws Exception At singularities
 void JointVel2CartVel(vect JointConfig, vect JointVel, vect& CartVel)
 {
     
@@ -133,7 +148,7 @@ void CartVel2JointVel(vect CartConfig, vect CartVel, vect& JointConfig, vect& Jo
     VectorCopy(_JointConfig, JointConfig);
 }
 
-
+// Generate Trajectory Parameters
 void TraGen(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5], matrix& paramx, matrix& paramy, matrix& paramz, matrix& paramphi, int nofvia){
 
 
@@ -243,6 +258,7 @@ void TraGen(double via_times[5], double x_via[5], double y_via[5], double z_via[
 
 }
 
+// Calculate Trajectory Joint Value and Velocitiy and Acceleration
 void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, matrix paramphi, int nofvia, unsigned int sampling_rate,
   vect* CartConfigArray,
   vect* JointConfigArray,
@@ -347,6 +363,32 @@ void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, m
     
     
 
+}
+
+// Execute Trajectory
+void TraExec( vect* JointConfigArray, vect* JointVelArray, vect* JointAccArray, double sampling_rate, unsigned int num_of_samples)
+{
+	// Move Robot to First Point
+	std::cout << "Moving Robot to the initial Trajectory Point" << std::endl;
+	MoveToConfiguration(JointConfigArray[0], true);
+
+	// Calculate step duration
+	double microseconds = (1.0 / sampling_rate) * S_TO_MICROS;
+
+	for (int i = 0; i < num_of_samples; i++)
+	{
+		bool success = false;
+		success = MoveWithConfVelAcc(JointConfigArray[i], JointVelArray[i], JointAccArray[i]);
+		if (!success)
+		{
+			std::cout << "Could Not Move to Desired Position" << std::endl;
+			return;
+		}
+
+		// Wait Until next step
+		usleep(microseconds);
+	}
+	std::cout << "Done!" << std::endl;
 }
 
 
