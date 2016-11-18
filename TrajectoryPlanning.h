@@ -233,14 +233,14 @@ void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, m
     for (int cur_sample = seg_offset[cur_seg]; cur_sample < seg_offset[cur_seg + 1]; cur_sample++)
     {
       // Parameterized Time 
-      double tau = cur_sample / num_seg_samples[cur_seg];
+      double tau = (cur_sample - seg_offset[cur_seg]) / num_seg_samples[cur_seg];
 
       // Calculating Polynomials for each sample
-      CartConfigArray[cur_sample][0] = paramx[cur_seg][0] + paramx[cur_seg][1]*tau + paramx[cur_seg][2]*pow(tau,2) + paramx[cur_seg][3]*pow(tau,3);
-      CartConfigArray[cur_sample][1] = paramy[cur_seg][0] + paramy[cur_seg][1] * tau + paramy[cur_seg][2] * pow(tau, 2) + paramy[cur_seg][3] * pow(tau, 3);
-      CartConfigArray[cur_sample][2] = paramz[cur_seg][0] + paramz[cur_seg][1] * tau + paramz[cur_seg][2] * pow(tau, 2) + paramz[cur_seg][3] * pow(tau, 3);
-      CartConfigArray[cur_sample][3] = paramphi[cur_seg][0] + paramphi[cur_seg][1] * tau + paramphi[cur_seg][2] * pow(tau, 2) + paramphi[cur_seg][3] * pow(tau, 3);
 
+        CartConfigArray[cur_sample][0] = paramx[cur_seg][0] + paramx[cur_seg][1] * tau + paramx[cur_seg][2] * pow(tau, 2) + paramx[cur_seg][3] * pow(tau, 3);
+        CartConfigArray[cur_sample][1] = paramy[cur_seg][0] + paramy[cur_seg][1] * tau + paramy[cur_seg][2] * pow(tau, 2) + paramy[cur_seg][3] * pow(tau, 3);
+        CartConfigArray[cur_sample][2] = paramz[cur_seg][0] + paramz[cur_seg][1] * tau + paramz[cur_seg][2] * pow(tau, 2) + paramz[cur_seg][3] * pow(tau, 3);
+        CartConfigArray[cur_sample][3] = paramphi[cur_seg][0] + paramphi[cur_seg][1] * tau + paramphi[cur_seg][2] * pow(tau, 2) + paramphi[cur_seg][3] * pow(tau, 3);
       
       // Use First Via Point
       if (cur_sample == 0)
@@ -263,7 +263,7 @@ void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, m
       }
       if (cur_sample > 400)
       {
-        std::cout << CartConfigArray[cur_sample][1];
+        std::cout << CartConfigArray[cur_sample][1] <<std::endl;
       }
     }
   }

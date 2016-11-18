@@ -198,6 +198,7 @@ void TrajectoryPlanning()
   TraGen(via_times, via_x, via_y, via_z, via_phi, paramx, paramy, paramz, paramphi, 5);
   TraCalc(via_times, paramx, paramy, paramz, paramphi, 5, SAMPLING_RATE, CartConfigArray, JointConfigArray, JointVelArray);
 
+
 }
 
 void InitRobot()
