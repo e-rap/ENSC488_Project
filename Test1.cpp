@@ -3,6 +3,7 @@
 #include "WHERE.h"
 #include "InverseKin.h"
 #include "PickAndPlace.h"
+#include "TrajectoryPlanning.h"
 
 using namespace std;
 
@@ -171,6 +172,34 @@ void PickAndPlaceHelper()
   //PickAndPlace(desiredPosition1, desiredPosition2, height);
 }
 
+void TrajectoryPlanning()
+{
+  matrix paramx;
+  matrix paramy;
+  matrix paramz;
+  matrix paramphi;
+  MatrixInit(paramx);
+  MatrixInit(paramy);
+  MatrixInit(paramz);
+  MatrixInit(paramphi);
+
+  vect CartConfigArray[MAX_DATA_POINTS];
+  vect JointConfigArray[MAX_DATA_POINTS];
+  vect JointVelArray[MAX_DATA_POINTS];
+
+  // Init Vectors
+  for (int i = 0; i < MAX_DATA_POINTS; i++)
+  {
+    VectorInit(CartConfigArray[i]);
+    VectorInit(JointConfigArray[i]);
+    VectorInit(JointVelArray[i]);
+  }
+
+  TraGen(via_times, via_x, via_y, via_z, via_phi, paramx, paramy, paramz, paramphi, 5);
+  TraCalc(via_times, paramx, paramy, paramz, paramphi, 5, SAMPLING_RATE, CartConfigArray, JointConfigArray, JointVelArray);
+
+}
+
 void InitRobot()
 {
   // Reset the Robot
@@ -225,6 +254,10 @@ void main()
     {
       gGrasp = !gGrasp;
       Grasp(gGrasp);
+    }
+    else if (user_input == 5)
+    {
+      TrajectoryPlanning();
     }
     else
     {

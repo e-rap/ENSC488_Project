@@ -2,6 +2,7 @@
 #define RobotGlobals_h__
 
 #include "matrix.h"
+#define DEBUG
 
 /////////////////////////////////////
 // Global Constants and Parameters //
@@ -43,6 +44,16 @@ const matrix T_SB = { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0,
 const matrix T_WT = { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, L7 }, { 0, 0, 0, 1 } };
 
 
+#ifdef DEBUG
+// Testing Via Points //
+double via_times[5] = { 0, 5, 10, 15, 20 };
+double via_x[5] = { 0, 0, 0, 0 ,0};
+double via_y[5] = { 320, 315, 310, 305, 300};
+double via_z[5] = { 26, 30, 35, 40 , 45};
+double via_phi[5] = { 0, 0, 0, 0, 0};
+#endif
+
+
 // Limit Check Functions //
 bool Theta1Check(double ang)
 {
@@ -81,7 +92,7 @@ bool Theta4Check2(double ang)
 
 bool D3Check2(double dist)
 {
-  return ((dist >= D3_MAX || dist <= D3_MIN) ? false : true);
+  return ((dist <= D3_MAX || dist >= D3_MIN) ? false : true);
 }
 
 void JointToVect(JOINT joint, vect& vector)

@@ -39,6 +39,25 @@ typedef double vect[VECTOR_SIZE];
 
 typedef double matrix[VECTOR_SIZE][VECTOR_SIZE];
 
+void VectorInit(vect& a)
+{
+  for (int j = 0; j < VECTOR_SIZE; j++)
+  {
+    a[j] = 0.0f;
+  }
+}
+
+void MatrixInit(matrix& a)
+{
+  for (int i = 0; i < VECTOR_SIZE; i++)
+  {
+    for (int j = 0; j < VECTOR_SIZE; j++)
+    {
+      a[i][j] = 0.0f;
+    }
+  }
+}
+
 // copies matrix a into matrix b
 void MatrixCopy(matrix a, matrix& b)
 {
