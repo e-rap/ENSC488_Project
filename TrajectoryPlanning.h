@@ -346,10 +346,10 @@ void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, m
     //Save sampled trajectory into txt file
     std::ofstream file ("data.txt");
     if(file.is_open()){
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < num_samples; i++)
         {
-            for (int j = 0; j < num_samples; j++){
-                file << CartConfigArray[j][i] << " ";
+            for (int j = 0; j < 3; j++){
+                file << CartConfigArray[i][j] << " ";
             }
             file << "\n";
             
