@@ -27,15 +27,20 @@ const int NUM_OF_LINK_VARS = 4;
 //////////////////
 const double THETA1_MAX = 150.0f;
 const double THETA1_MIN = -150.0f;
+const double VelTheta1_MAX=10.0f;
+
 
 const double THETA2_MAX = 100.0f;
 const double THETA2_MIN = -100.0f;
+const double VelTheta2_MAX=10.0f;
 
 const double D3_MAX = -100.0f;
 const double D3_MIN = -200.0f;
+const double VelD3_MAX=10.0f;
 
 const double THETA4_MAX = 160.0f;
 const double THETA4_MIN = -160.0f;
+const double VelTheta4_MAX=10.0f;
 
 //////////////////
 // Known Frames //
@@ -94,6 +99,22 @@ bool D3Check2(double dist)
 {
   return ((dist <= D3_MAX || dist >= D3_MIN) ? false : true);
 }
+bool VelTheta1Check(double vel)
+{
+    return ((vel > VelTheta1_MAX || vel < -VelTheta1_MAX) ? false : true);
+}
+bool VelTheta2Check(double vel)
+{
+    return ((vel > VelTheta2_MAX || vel < -VelTheta2_MAX) ? false : true);
+}
+bool VelD3Check(double vel)
+{
+    return ((vel > VelD3_MAX || vel < -VelD3_MAX) ? false : true);
+}
+bool VelTheta4Check(double vel)
+{
+    return ((vel > VelTheta4_MAX || vel < -VelTheta4_MAX) ? false : true);
+}
 
 void JointToVect(JOINT joint, vect& vector)
 {
@@ -111,10 +132,5 @@ void VectToJoint(vect vector, JOINT& joint)
   }
 }
 
-void GetCurrentConfig(vect& cur_config)
-{
-  JOINT config;
-  GetConfiguration(config);
-  JointToVect(config, cur_config);
-}
+
 #endif // RobotGlobals_h__

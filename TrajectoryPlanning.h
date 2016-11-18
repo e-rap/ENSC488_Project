@@ -2,15 +2,15 @@
 #define TrajectoryPlanning_h__
 
 #include "matrix.h"
-#include "ensc-488.h"
 #include "RobotGlobals.h"
-#include "InverseKin.h"
 #include <exception>
 #include <cmath>
+#include "InverseKin.h"
+#include <fstream>
 
 #define MAX_VIA_POINTS 5
 #define SAMPLING_RATE 60
-#define MAX_TIME 30
+#define MAX_TIME 60
 #define MAX_DATA_POINTS SAMPLING_RATE*MAX_TIME
 
 // Description : Uses the Jacobian to convert joint space velocities to Cartesian space velocities
@@ -19,7 +19,42 @@
 //   JointVel    - Current Joint Velocities (theta1dot, theta2dot, V3, theta4dot)
 // Outputs:
 //   CartVel     - Cartesian velocities (Vx, Vy, Vz, phidot)
-// Throws Exception At singularities 
+// Throws Exception At singularities
+
+//Read Via points from text file "viapoints"
+void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5]) {
+    double temp[5][5];
+    std::ifstream in("viapoints.txt");
+    
+    if (!in) {
+        std::cout << "Cannot open file.\n";
+        return;
+    }
+    
+    for (int line = 0; line < 5; line++) {
+        for (int row = 0; row < 5; row++) {
+            in >> temp[line][row];
+        }
+    }
+    in.close();
+    for(int i=0;i<5;i++){
+        via_times[i]=temp[0][i];
+    }
+    
+    for(int i=0;i<5;i++){
+        x_via[i]=temp[1][i];
+    }
+    for(int i=0;i<5;i++){
+        y_via[i]=temp[2][i];
+    }
+    for(int i=0;i<5;i++){
+        z_via[i]=temp[3][i];
+    }
+    for(int i=0;i<5;i++){
+        phi_via[i]=temp[4][i];
+    }
+}
+
 void JointVel2CartVel(vect JointConfig, vect JointVel, vect& CartVel)
 {
     
@@ -31,9 +66,9 @@ void JointVel2CartVel(vect JointConfig, vect JointVel, vect& CartVel)
   // calculated the 2x2 det for x y theta1 theta2
     double det = a*d-b*c;
   // Check if at a singularity
-  if (det == 0 || JointConfig[2] == -100 || JointConfig[2] == -200 || Theta1Check2(JointConfig[0]) || Theta2Check2(JointConfig[1]) || D3Check2(JointConfig[2]) || Theta2Check2(JointConfig[3]))
+  if (det == 0 || JointConfig[2] == -100 || JointConfig[2] == -200 || !Theta1Check2(JointConfig[0]) || !Theta2Check2(JointConfig[1]) || !D3Check2(JointConfig[2]) || !Theta4Check2(JointConfig[3]))
   {
-    throw std::exception("Encountered Boundary singularity!");
+    std::cout<<"Encountered Boundary singularity!";
     return;
   }
   //apply Jacobian
@@ -79,7 +114,6 @@ void CartVel2JointVel(vect CartConfig, vect CartVel, vect& JointConfig, vect& Jo
     double C=-c/det;
     double D=d/det;
     
-    double detinverse=(A*D)-(B*C);
     
     //Check for singularities
 #ifndef DEBUG
@@ -214,15 +248,14 @@ void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, m
   vect* JointConfigArray,
   vect* JointVelArray)
 {
-  vect dur = { 0, 0, 0, 0 };
   vect num_seg_samples = { 0, 0, 0, 0 };
   double seg_offset[5] = { 0, 0, 0, 0, 0};
-
-  // Calculating Sample Offsets and 
+  int num_samples  = (via_times[nofvia-1] - via_times[0])*SAMPLING_RATE;
+   
+  // Calculating Sample Offsets and
   for (int i = 0; i < VECTOR_SIZE; i++)
   {
-    dur[i] = via_times[i + 1] - via_times[i];
-    num_seg_samples[i] = dur[i] * 60;
+    num_seg_samples[i] = (via_times[i + 1] - via_times[i]) * SAMPLING_RATE;
     seg_offset[i + 1] = seg_offset[i] + num_seg_samples[i];
   }
   
@@ -249,7 +282,6 @@ void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, m
         vect far_sol = { 0, 0, 0, 0 };
         bool sol = false;
         U2I(CartConfigArray[cur_sample], CartConfigMatrix);
-        vect curCartVel = { 0, 0, 0, 0 };
         SOLVE(CartConfigMatrix, CartConfigArray[0], JointConfigArray[0], far_sol, sol);
       }
 
@@ -261,12 +293,60 @@ void TraCalc(double via_times[5], matrix paramx, matrix paramy, matrix paramz, m
         VectorMulS(curCartVel, sampling_rate, curCartVel);
         CartVel2JointVel(CartConfigArray[cur_sample], curCartVel, JointConfigArray[cur_sample], JointVelArray[cur_sample]);
       }
-      if (cur_sample > 400)
-      {
-        std::cout << CartConfigArray[cur_sample][1] <<std::endl;
-      }
+        
+
+//testing
+//      std::cout <<cur_sample <<"      " << CartConfigArray[cur_sample][0]<<"   " << CartConfigArray[cur_sample][1] <<                 std::endl << "      "  << JointConfigArray[cur_sample][0] << "   " << JointConfigArray[cur_sample][1]<< std::endl <<std::endl;
+//        
+//        std::cout<< cur_sample << "  " <<JointVelArray[cur_sample][0] << std::endl;
     }
+//      std::cout<<std::endl;
+      
   }
+    
+    // find maximum Joint Velocities
+    vect JointVel_MAX={0,0,0,0};
+    for(int i=0; i<4; i++){
+        for(int j=0;j<num_samples;j++){
+        
+            if(fabs(JointVelArray[j][i])>JointVel_MAX[i]){
+            JointVel_MAX[i]=fabs(JointVelArray[j][i]);
+            }
+        }
+//        std:: cout <<JointVel_MAX[i] << "  ";
+    }
+    
+//    std::cout <<std::endl;
+    
+    //Check if maximum Joint Velocities are valid
+    
+    if (!VelTheta1Check(JointVel_MAX[0]) || !VelTheta2Check(JointVel_MAX[1]) || !VelTheta4Check(JointVel_MAX[3]) || !VelD3Check(JointVel_MAX[2]))
+    {
+        std::cout<< "the required Joint Velocities for this trajectory are too high";
+        return;
+    }
+
+    
+    //Save sampled trajectory into txt file
+    std::ofstream file ("data.txt");
+    if(file.is_open()){
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < num_samples; j++){
+                file << CartConfigArray[j][i] << " ";
+            }
+            file << "\n";
+            
+        }
+        file.close();
+    }
+    else{
+        std::cout<<"unable to open file";
+    }
+
+    
+    
+
 }
 
 
