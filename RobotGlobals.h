@@ -132,5 +132,11 @@ void VectToJoint(vect vector, JOINT& joint)
   }
 }
 
+void GetCurrentConfig(vect& curConfig)
+{
+  JOINT Config;
+  GetConfiguration(Config);
+  VectorCopy(Config, curConfig);
+}
 
 #endif // RobotGlobals_h__

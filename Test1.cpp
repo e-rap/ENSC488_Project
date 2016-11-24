@@ -4,6 +4,7 @@
 #include "InverseKin.h"
 #include "PickAndPlace.h"
 #include "TrajectoryPlanning.h"
+#include "RobotGlobals.h"
 
 using namespace std;
 
@@ -183,9 +184,21 @@ void TrajectoryPlanning()
   MatrixInit(paramz);
   MatrixInit(paramphi);
 
+
+  double times[5] = { 0, 0, 0, 0, 0 };
+  double viax[5] = { 0, 0, 0, 0, 0 };
+  double viay[5] = { 0, 0, 0, 0, 0 };
+  double viaz[5] = { 0, 0, 0, 0, 0 };
+  double viaphi[5] = { 0, 0, 0, 0, 0 };
+  ReadViaPoints(times, viax, viay, viaz, viaphi);
+
+  
+
   vect CartConfigArray[MAX_DATA_POINTS];
   vect JointConfigArray[MAX_DATA_POINTS];
   vect JointVelArray[MAX_DATA_POINTS];
+  vect JointAccArray[MAX_DATA_POINTS];
+  int num_samples= 0;
 
   // Init Vectors
   for (int i = 0; i < MAX_DATA_POINTS; i++)
@@ -193,12 +206,19 @@ void TrajectoryPlanning()
     VectorInit(CartConfigArray[i]);
     VectorInit(JointConfigArray[i]);
     VectorInit(JointVelArray[i]);
+    VectorInit(JointAccArray[i]);
   }
 
-  TraGen(via_times, via_x, via_y, via_z, via_phi, paramx, paramy, paramz, paramphi, 5);
-  TraCalc(via_times, paramx, paramy, paramz, paramphi, 5, SAMPLING_RATE, CartConfigArray, JointConfigArray, JointVelArray);
+  TraGen(times, viax, viay, viaz, viaphi, paramx, paramy, paramz, paramphi, 5);
+  TraCalc(times, paramx, paramy, paramz, paramphi, 5, SAMPLING_RATE, CartConfigArray, JointConfigArray, JointVelArray,num_samples);
+  TraExec(JointConfigArray, JointVelArray, JointAccArray, SAMPLING_RATE, num_samples);
+  JOINT config = { 0, 0, 0, 0 };
+  GetConfiguration(config);
 
-
+  StopRobot();
+  ResetRobot();
+  WHERE(config[0], config[1], config[2], config[3], config);
+  DisplayV(config);
 }
 
 void InitRobot()
