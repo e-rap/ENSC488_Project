@@ -294,10 +294,10 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
                 JointVelArray[cur_sample][3] = (1/h[cur_seg])*(param4[cur_seg][1] + 2 * param4[cur_seg][2] * tau + 3 * param4[cur_seg][3] * pow(tau, 2));
                 
                 // Calculating Acl
-                JointAclArray[cur_sample][0] = 2 * param1[cur_seg][2] + 6 * param1[cur_seg][3] * tau;
-                JointAclArray[cur_sample][1] = 2 * param2[cur_seg][2] + 6 * param2[cur_seg][3] * tau;
-                JointAclArray[cur_sample][2] = 2 * param3[cur_seg][2] + 6 * param3[cur_seg][3] * tau;
-                JointAclArray[cur_sample][3] = 2 * param4[cur_seg][2] + 6 * param4[cur_seg][3] * tau;
+                JointAclArray[cur_sample][0] = (1/pow(h[cur_seg],2))*(2 * param1[cur_seg][2] + 6 * param1[cur_seg][3] * tau);
+                JointAclArray[cur_sample][1] = (1/pow(h[cur_seg],2))*(2 * param2[cur_seg][2] + 6 * param2[cur_seg][3] * tau);
+                JointAclArray[cur_sample][2] = (1/pow(h[cur_seg],2))*(2 * param3[cur_seg][2] + 6 * param3[cur_seg][3] * tau);
+                JointAclArray[cur_sample][3] = (1/pow(h[cur_seg],2))*(2 * param4[cur_seg][2] + 6 * param4[cur_seg][3] * tau);
             }
         }
         
@@ -343,6 +343,22 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
         else{
             std::cout << "unable to open file";
         }
+        std::ofstream file3("theoAcl.txt");
+        if (file3.is_open()){
+            for (int i = 0; i < num_samples; i++)
+            {
+                for (int j = 0; j < VECTOR_SIZE; j++){
+                    file3 << JointAclArray[i][j] << " ";
+                }
+                file3 << std::endl;
+                
+            }
+            file3.close();
+        }
+        else{
+            std::cout << "unable to open file";
+        }
+        
         
     }
 }
