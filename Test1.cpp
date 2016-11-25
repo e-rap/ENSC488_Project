@@ -175,14 +175,20 @@ void PickAndPlaceHelper()
 
 void TrajectoryPlanning()
 {
-  matrix paramx;
-  matrix paramy;
-  matrix paramz;
-  matrix paramphi;
-  MatrixInit(paramx);
-  MatrixInit(paramy);
-  MatrixInit(paramz);
-  MatrixInit(paramphi);
+  int num_via;
+
+  cout << "Input Number of Via points in file";
+  cin >> num_via;
+  cout << endl;
+
+  matrix param1;
+  matrix param2;
+  matrix param3;
+  matrix param4;
+  MatrixInit(param1);
+  MatrixInit(param2);
+  MatrixInit(param3);
+  MatrixInit(param4);
 
 
   double times[5] = { 0, 0, 0, 0, 0 };
@@ -190,33 +196,77 @@ void TrajectoryPlanning()
   double viay[5] = { 0, 0, 0, 0, 0 };
   double viaz[5] = { 0, 0, 0, 0, 0 };
   double viaphi[5] = { 0, 0, 0, 0, 0 };
-  ReadViaPoints(times, viax, viay, viaz, viaphi);
 
-  
+  ReadViaPoints(times, viax, viay, viaz, viaphi,num_via);
 
-  vect CartConfigArray[MAX_DATA_POINTS];
-  vect JointConfigArray[MAX_DATA_POINTS];
+  vect jointPosVector[5] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+  for (int i = 0; i < num_via; i++)
+  {
+    vect tempConfig = { 0, 0, 0, 0 };
+    vect closestSol = { 0, 0, 0, 0 };
+    bool sol = false;
+
+    matrix tempConfigMat;
+    MatrixInit(tempConfigMat);
+
+    tempConfig[0] = viax[i];
+    tempConfig[1] = viay[i];
+    tempConfig[2] = viaz[i];
+    tempConfig[3] = viaphi[i];
+    U2I(tempConfig, tempConfigMat);
+    vect zeroVect = { 0, 0, 0, 0 };
+    if (i == 0)
+    {
+      SOLVE(tempConfigMat, zeroVect, closestSol, zeroVect, sol);
+      if (!sol)
+      {
+        std::cout << "TRAJPLAN: No solutions found for input config" << std::endl;
+      }
+      VectorCopy(closestSol, jointPosVector[i]);
+      continue;
+    }
+
+    SOLVE(tempConfigMat, jointPosVector[i - 1], closestSol, zeroVect, sol);
+    if (!sol)
+    {
+      std::cout << "TRAJPLAN: No solutions found for input config" << std::endl;
+    }
+    VectorCopy(closestSol, jointPosVector[i]);
+  }
+
+  double via1[5] = { 0, 0, 0, 0, 0 };
+  double via2[5] = { 0, 0, 0, 0, 0 };
+  double via3[5] = { 0, 0, 0, 0, 0 };
+  double via4[5] = { 0, 0, 0, 0, 0 };
+
+  for (int i = 0; i < num_via; i++)
+  {
+    via1[i] = jointPosVector[i][0];
+    via2[i] = jointPosVector[i][1];
+    via3[i] = jointPosVector[i][2];
+    via4[i] = jointPosVector[i][3];
+  }
+
+  vect JointPosArray[MAX_DATA_POINTS];
   vect JointVelArray[MAX_DATA_POINTS];
-  vect JointAccArray[MAX_DATA_POINTS];
+  vect JointAccelArray[MAX_DATA_POINTS];
   int num_samples= 0;
 
   // Init Vectors
   for (int i = 0; i < MAX_DATA_POINTS; i++)
   {
-    VectorInit(CartConfigArray[i]);
-    VectorInit(JointConfigArray[i]);
+    VectorInit(JointPosArray[i]);
     VectorInit(JointVelArray[i]);
-    VectorInit(JointAccArray[i]);
+    VectorInit(JointAccelArray[i]);
   }
 
-  TraGen(times, viax, viay, viaz, viaphi, paramx, paramy, paramz, paramphi, 5);
-  TraCalc(times, paramx, paramy, paramz, paramphi, 5, SAMPLING_RATE, CartConfigArray, JointConfigArray, JointVelArray,num_samples);
-  TraExec(JointConfigArray, JointVelArray, JointAccArray, SAMPLING_RATE, num_samples);
-  JOINT config = { 0, 0, 0, 0 };
-  GetConfiguration(config);
-
+  TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, 5);
+  TraCalc(times, param1, param2, param3, param4, 5, SAMPLING_RATE, JointPosArray, JointVelArray, JointAccelArray,num_samples);
+  TraExec(JointPosArray, JointVelArray, JointAccelArray, SAMPLING_RATE, num_samples);
   StopRobot();
   ResetRobot();
+  JOINT config = { 0, 0, 0, 0 };
+  GetConfiguration(config);
   WHERE(config[0], config[1], config[2], config[3], config);
   DisplayV(config);
 }

@@ -23,7 +23,7 @@
 // @output near    - nearest solution wrt current position {theta1,theta2,d3,theta4}
 // @output far     - farthest solution wrt current position {theta1,theta2,d3,theta4}
 // @output sol     - true of solutions exist otherwise false {theta1,theta2,d3,theta4}
-void INVKIN(matrix T_BW, vect current, vect& near, vect& far, bool& sol)
+void INVKIN(matrix T_BW, vect current, vect& near, vect& far_sol, bool& sol)
 {
   sol = false;
 
@@ -102,7 +102,7 @@ void INVKIN(matrix T_BW, vect current, vect& near, vect& far, bool& sol)
       if (diffsum > farthest)
       {
         farthest = diffsum;
-        VectorCopy(solutions[i], far);
+        VectorCopy(solutions[i], far_sol);
       }
       if (diffsum < nearest)
       {
@@ -126,7 +126,7 @@ void INVKIN(matrix T_BW, vect current, vect& near, vect& far, bool& sol)
 //globally defined variables or constants.SOLVE should use calls to TMULT, TINVERT,
 //and INVKIN.
 
-void SOLVE(matrix T_ST, vect current, vect& near, vect& far, bool& sol)
+void SOLVE(matrix T_ST, vect current, vect& near, vect& far_sol, bool& sol)
 {
   matrix T_BS = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
   matrix T_TW = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
@@ -140,7 +140,7 @@ void SOLVE(matrix T_ST, vect current, vect& near, vect& far, bool& sol)
   Inverse(T_WT, T_TW); // T_TW
   Multiply(T_BS, T_ST, T_BT); // T_BS * T_ST = T_BT
   Multiply(T_BT, T_TW, T_BW); // T_BT * T_TW = T_BW
-  INVKIN(T_BW, current, near, far, sol);
+  INVKIN(T_BW, current, near, far_sol, sol);
 }
 
 

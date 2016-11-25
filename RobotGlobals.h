@@ -4,6 +4,15 @@
 #include "matrix.h"
 #define DEBUG
 
+//////////////////////////
+// Trajectory Constants //
+//////////////////////////
+#define S_TO_MILIS 1000.0
+#define MAX_VIA_POINTS 5
+#define SAMPLING_RATE 120
+#define MAX_TIME 60
+#define MAX_DATA_POINTS SAMPLING_RATE*MAX_TIME
+
 /////////////////////////////////////
 // Global Constants and Parameters //
 /////////////////////////////////////

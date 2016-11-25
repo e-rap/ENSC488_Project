@@ -9,13 +9,6 @@
 #include <fstream>
 #include <windows.h>
 
-#define S_TO_MILIS 1000.0
-
-#define MAX_VIA_POINTS 5
-#define SAMPLING_RATE 60
-#define MAX_TIME 60
-#define MAX_DATA_POINTS SAMPLING_RATE*MAX_TIME
-
 
 double PCFreq = 0.0;
 __int64 CounterStart = 0;
@@ -24,7 +17,7 @@ void StartCounter()
 {
   LARGE_INTEGER li;
   if (!QueryPerformanceFrequency(&li))
-    cout << "QueryPerformanceFrequency failed!\n";
+    std::cout << "QueryPerformanceFrequency failed!\n";
 
   PCFreq = double(li.QuadPart) / S_TO_MILIS;
 
@@ -52,35 +45,35 @@ void microsleep( double duration)
 }
 
 //Read Via points from text file "viapoints"
-void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5]) {
+void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5], int num_via) {
     double temp[5][5];
-    std::ifstream in("viapoints.txt");
+    std::ifstream in("viapoints2.txt");
     
     if (!in) {
         std::cout << "Cannot open file.\n";
         return;
     }
     
-    for (int line = 0; line < 5; line++) {
+    for (int line = 0; line < num_via; line++) {
         for (int row = 0; row < 5; row++) {
             in >> temp[line][row];
         }
     }
     in.close();
-    for(int i=0;i<5;i++){
+    for(int i=0;i<num_via;i++){
         via_times[i]=temp[0][i];
     }
     
-    for(int i=0;i<5;i++){
+    for (int i = 0; i<num_via; i++){
         x_via[i]=temp[1][i];
     }
-    for(int i=0;i<5;i++){
+    for (int i = 0; i<num_via; i++){
         y_via[i]=temp[2][i];
     }
-    for(int i=0;i<5;i++){
+    for (int i = 0; i<num_via; i++){
         z_via[i]=temp[3][i];
     }
-    for(int i=0;i<5;i++){
+    for (int i = 0; i<num_via; i++){
         phi_via[i]=temp[4][i];
     }
 }
@@ -272,14 +265,7 @@ void TraGen(double via_times[5], double theta1_via[5], double theta2_via[5], dou
     for (int i = 0; i < num_via - 1; i++){
         param4[i][2] = theta4_via[i + 1] - param4[i][0] - param4[i][1] - param4[i][3]; //parameter c
     }
-    
-    for(int i=0;i<5;i++){
-        std::cout<<v1_via[i]<<" ";
-    }
-    
-    
     return;
-    
 }
 
 // Calculate Trajectory Joint Value and Velocitiy and Acceleration
@@ -409,7 +395,7 @@ void TraExec( vect* JointPosArray, vect* JointVelArray, vect* JointAccArray, dou
 	// Calculate step duration
 	double mili = (1.0 / sampling_rate) * S_TO_MILIS;
 
-	for (int i = 1; i < num_of_samples; i++)
+	for (int i = 0; i < num_of_samples; i++)
 	{
 		bool success = false;
 		success = MoveWithConfVelAcc(JointPosArray[i], JointVelArray[i], JointAccArray[i]);
