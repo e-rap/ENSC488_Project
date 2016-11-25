@@ -47,7 +47,7 @@ void microsleep( double duration)
 //Read Via points from text file "viapoints"
 void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5], int num_via) {
     double temp[5][5];
-    std::ifstream in("viapoints2.txt");
+    std::ifstream in(filename);
     
     if (!in) {
         std::cout << "Cannot open file.\n";
@@ -277,14 +277,15 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
 {
     
     double h[4];
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < num_via-1; i++){
         h[i] = via_times[i + 1] - via_times[i];
     }
     
     
     vect num_seg_samples = { 0, 0, 0, 0 };
     double seg_offset[5] = { 0, 0, 0, 0, 0 };
-    num_samples = (via_times[num_via - 1] - via_times[0])*SAMPLING_RATE;
+    int num_seg=num_via-1;
+    num_samples = (via_times[num_seg] - via_times[0])*SAMPLING_RATE;
     
     // Calculating Sample Offsets and
     for (int i = 0; i < num_via - 1; i++)
