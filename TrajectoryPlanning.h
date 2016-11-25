@@ -16,6 +16,41 @@
 #define MAX_TIME 60
 #define MAX_DATA_POINTS SAMPLING_RATE*MAX_TIME
 
+
+double PCFreq = 0.0;
+__int64 CounterStart = 0;
+
+void StartCounter()
+{
+  LARGE_INTEGER li;
+  if (!QueryPerformanceFrequency(&li))
+    cout << "QueryPerformanceFrequency failed!\n";
+
+  PCFreq = double(li.QuadPart) / S_TO_MILIS;
+
+  QueryPerformanceCounter(&li);
+  CounterStart = li.QuadPart;
+}
+double GetCounter()
+{
+  LARGE_INTEGER li;
+  QueryPerformanceCounter(&li);
+  return double(li.QuadPart - CounterStart) / PCFreq;
+}
+
+void microsleep( double duration)
+{
+  StartCounter();
+  while (true)
+  {
+    if (GetCounter() >= duration)
+    {
+      return;
+    }
+  }
+
+}
+
 //Read Via points from text file "viapoints"
 void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5]) {
     double temp[5][5];
@@ -342,9 +377,8 @@ void TraExec( vect* JointPosArray, vect* JointVelArray, vect* JointAccArray, dou
 			std::cout << "Could Not Move to Desired Position" << std::endl;
 			return;
 		}
+    microsleep(mili);
 
-		// Wait Until next step
-    Sleep(mili);
 	}
 	std::cout << "Done!" << std::endl;
 }
