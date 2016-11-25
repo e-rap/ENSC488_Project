@@ -172,190 +172,232 @@ void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double
 
 // Generate Trajectory Parameters
 void TraGen(double via_times[5], double theta1_via[5], double theta2_via[5], double d3_via[5], double theta4_via[5], matrix& param1, matrix& param2, matrix& param3, matrix& param4, int num_via){
-
-
-
-
-  double h[4];
-  for (int i = 0; i < 4; i++){
-    h[i] = via_times[i + 1] - via_times[i];
-  }
-
-
-  //via pt velocities
-  double vx_via[MAX_VIA_POINTS];
-  double vy_via[MAX_VIA_POINTS];
-  double vz_via[MAX_VIA_POINTS];
-  double vphi_via[MAX_VIA_POINTS];
-
-  for (int i = 0; i < num_via; i++){
-    vx_via[i] = 0;
-    vy_via[i] = 0;
-    vz_via[i] = 0;
-    vphi_via[i] = 0;
-
-  }
-
-  //calculate via point velocities as average//
-  //inital and final velocity remain 0 to obtain a smooth start/stop
-
-  for (int i = 1; i < num_via - 1; i++){
-    vx_via[i] = (((theta1_via[i] - theta1_via[i - 1]) / h[i - 1]) + ((theta1_via[i + 1] - theta1_via[i]) / h[i])) / 2;
-  }
-  for (int i = 1; i < num_via - 1; i++){
-    vy_via[i] = (((theta2_via[i] - theta2_via[i - 1]) / h[i - 1]) + ((theta2_via[i + 1] - theta2_via[i]) / h[i])) / 2;
-  }
-  for (int i = 1; i < num_via - 1; i++){
-    vz_via[i] = (((d3_via[i] - d3_via[i - 1]) / h[i - 1]) + ((d3_via[i + 1] - d3_via[i]) / h[i])) / 2;
-  }
-  for (int i = 1; i < num_via - 1; i++){
-    vphi_via[i] = (((theta4_via[i] - theta4_via[i - 1]) / h[i - 1]) + ((theta4_via[i + 1] - theta4_via[i]) / h[i])) / 2;
-  }
-
-  //calculate parameters//
-
-  // for x:
-  for (int i = 0; i < num_via - 1; i++){
-    param1[i][0] = theta1_via[i];  //parameter a
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param1[i][1] = h[i] * vx_via[i]; //parameter b
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param1[i][3] = h[i] * vx_via[i + 1] + 2 * param1[i][0] + param1[i][1] - 2 * theta1_via[i + 1]; //parameter d
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param1[i][2] = theta1_via[i + 1] - param1[i][0] - param1[i][1] - param1[i][3]; //parameter c
-  }
-
-
-  //for y:
-  for (int i = 0; i < num_via - 1; i++){
-    param2[i][0] = theta2_via[i];  //parameter a
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param2[i][1] = h[i] * vy_via[i]; //parameter b
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param2[i][3] = h[i] * vy_via[i + 1] + 2 * param2[i][0] + param2[i][1] - 2 * theta2_via[i + 1]; //parameter d
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param2[i][2] = theta2_via[i + 1] - param2[i][0] - param2[i][1] - param2[i][3]; //parameter c
-  }
-
-
-  //for z:
-  for (int i = 0; i < num_via - 1; i++){
-    param3[i][0] = d3_via[i];  //parameter a
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param3[i][1] = h[i] * vz_via[i]; //parameter b
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param3[i][3] = h[i] * vz_via[i + 1] + 2 * param3[i][0] + param3[i][1] - 2 * d3_via[i + 1]; //parameter d
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param3[i][2] = d3_via[i + 1] - param3[i][0] - param3[i][1] - param3[i][3]; //parameter c
-  }
-
-
-  //for phi:
-  for (int i = 0; i < num_via - 1; i++){
-    param4[i][0] = theta4_via[i];  //parameter a
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param4[i][1] = h[i] * vphi_via[i]; //parameter b
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param4[i][3] = h[i] * vphi_via[i + 1] + 2 * param4[i][0] + param4[i][1] - 2 * theta4_via[i + 1]; //parameter d
-  }
-  for (int i = 0; i < num_via - 1; i++){
-    param4[i][2] = theta4_via[i + 1] - param4[i][0] - param4[i][1] - param4[i][3]; //parameter c
-  }
-
-
-
-
-  return;
-
+    
+    
+    
+    
+    double h[4];
+    for (int i = 0; i < 4; i++){
+        h[i] = via_times[i + 1] - via_times[i];
+    }
+    
+    
+    //via pt velocities
+    double v1_via[MAX_VIA_POINTS];
+    double v2_via[MAX_VIA_POINTS];
+    double v3_via[MAX_VIA_POINTS];
+    double v4_via[MAX_VIA_POINTS];
+    
+    for (int i = 0; i < num_via; i++){
+        v1_via[i] = 0;
+        v2_via[i] = 0;
+        v3_via[i] = 0;
+        v4_via[i] = 0;
+        
+    }
+    
+    //calculate via point velocities as average//
+    //inital and final velocity remain 0 to obtain a smooth start/stop
+    
+    for (int i = 1; i < num_via - 1; i++){
+        v1_via[i] = (((theta1_via[i] - theta1_via[i - 1]) / h[i - 1]) + ((theta1_via[i + 1] - theta1_via[i]) / h[i])) / 2;
+    }
+    for (int i = 1; i < num_via - 1; i++){
+        v2_via[i] = (((theta2_via[i] - theta2_via[i - 1]) / h[i - 1]) + ((theta2_via[i + 1] - theta2_via[i]) / h[i])) / 2;
+    }
+    for (int i = 1; i < num_via - 1; i++){
+        v3_via[i] = (((d3_via[i] - d3_via[i - 1]) / h[i - 1]) + ((d3_via[i + 1] - d3_via[i]) / h[i])) / 2;
+    }
+    for (int i = 1; i < num_via - 1; i++){
+        v4_via[i] = (((theta4_via[i] - theta4_via[i - 1]) / h[i - 1]) + ((theta4_via[i + 1] - theta4_via[i]) / h[i])) / 2;
+    }
+    
+    //calculate parameters//
+    
+    // for theta1:
+    for (int i = 0; i < num_via - 1; i++){
+        param1[i][0] = theta1_via[i];  //parameter a
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param1[i][1] = h[i] * v1_via[i]; //parameter b
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param1[i][3] = h[i] * v1_via[i + 1] + 2 * param1[i][0] + param1[i][1] - 2 * theta1_via[i + 1]; //parameter d
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param1[i][2] = theta1_via[i + 1] - param1[i][0] - param1[i][1] - param1[i][3]; //parameter c
+    }
+    
+    
+    //for theta2:
+    for (int i = 0; i < num_via - 1; i++){
+        param2[i][0] = theta2_via[i];  //parameter a
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param2[i][1] = h[i] * v2_via[i]; //parameter b
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param2[i][3] = h[i] * v2_via[i + 1] + 2 * param2[i][0] + param2[i][1] - 2 * theta2_via[i + 1]; //parameter d
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param2[i][2] = theta2_via[i + 1] - param2[i][0] - param2[i][1] - param2[i][3]; //parameter c
+    }
+    
+    
+    //for theta3:
+    for (int i = 0; i < num_via - 1; i++){
+        param3[i][0] = d3_via[i];  //parameter a
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param3[i][1] = h[i] * v3_via[i]; //parameter b
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param3[i][3] = h[i] * v3_via[i + 1] + 2 * param3[i][0] + param3[i][1] - 2 * d3_via[i + 1]; //parameter d
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param3[i][2] = d3_via[i + 1] - param3[i][0] - param3[i][1] - param3[i][3]; //parameter c
+    }
+    
+    
+    //for theta4:
+    for (int i = 0; i < num_via - 1; i++){
+        param4[i][0] = theta4_via[i];  //parameter a
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param4[i][1] = h[i] * v4_via[i]; //parameter b
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param4[i][3] = h[i] * v4_via[i + 1] + 2 * param4[i][0] + param4[i][1] - 2 * theta4_via[i + 1]; //parameter d
+    }
+    for (int i = 0; i < num_via - 1; i++){
+        param4[i][2] = theta4_via[i + 1] - param4[i][0] - param4[i][1] - param4[i][3]; //parameter c
+    }
+    
+    for(int i=0;i<5;i++){
+        std::cout<<v1_via[i]<<" ";
+    }
+    
+    
+    return;
+    
 }
 
 // Calculate Trajectory Joint Value and Velocitiy and Acceleration
 void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, matrix param4, int num_via, unsigned int sampling_rate,
-  vect* JointPosArray,
-  vect* JointVelArray,
-  vect* JointAclArray,
-  int& num_samples)
+             vect* JointPosArray,
+             vect* JointVelArray,
+             vect* JointAclArray,
+             int& num_samples)
 {
-  vect num_seg_samples = { 0, 0, 0, 0 };
-  double seg_offset[5] = { 0, 0, 0, 0, 0 };
-  num_samples = (via_times[num_via - 1] - via_times[0])*SAMPLING_RATE;
-
-  // Calculating Sample Offsets and
-  for (int i = 0; i < num_via - 1; i++)
-  {
-    num_seg_samples[i] = (via_times[i + 1] - via_times[i]) * SAMPLING_RATE;
-    seg_offset[i + 1] = seg_offset[i] + num_seg_samples[i];
-
-    // Loop through segments
-    for (int cur_seg = 0; cur_seg < num_via - 1; cur_seg++)
-    {
-      // Sample within segments
-      for (int cur_sample = seg_offset[cur_seg]; cur_sample < seg_offset[cur_seg + 1]; cur_sample++)
-      {
-        // Parameterized Time 
-        double tau = (cur_sample - seg_offset[cur_seg]) / num_seg_samples[cur_seg];
-
-        // Calculating Pos
-
-        JointPosArray[cur_sample][0] = param1[cur_seg][0] + param1[cur_seg][1] * tau + param1[cur_seg][2] * pow(tau, 2) + param1[cur_seg][3] * pow(tau, 3);
-        JointPosArray[cur_sample][1] = param2[cur_seg][0] + param2[cur_seg][1] * tau + param2[cur_seg][2] * pow(tau, 2) + param2[cur_seg][3] * pow(tau, 3);
-        JointPosArray[cur_sample][2] = param3[cur_seg][0] + param3[cur_seg][1] * tau + param3[cur_seg][2] * pow(tau, 2) + param3[cur_seg][3] * pow(tau, 3);
-        JointPosArray[cur_sample][3] = param4[cur_seg][0] + param4[cur_seg][1] * tau + param4[cur_seg][2] * pow(tau, 2) + param4[cur_seg][3] * pow(tau, 3);
-
-        // Calculating Vel
-        JointVelArray[cur_sample][0] = param1[cur_seg][1] + 2 * param1[cur_seg][2] * tau + 3 * param1[cur_seg][3] * pow(tau, 2);
-        JointVelArray[cur_sample][1] = param2[cur_seg][1] + 2 * param2[cur_seg][2] * tau + 3 * param2[cur_seg][3] * pow(tau, 2);
-        JointVelArray[cur_sample][2] = param3[cur_seg][1] + 2 * param3[cur_seg][2] * tau + 3 * param3[cur_seg][3] * pow(tau, 2);
-        JointVelArray[cur_sample][3] = param4[cur_seg][1] + 2 * param4[cur_seg][2] * tau + 3 * param4[cur_seg][3] * pow(tau, 2);
-
-        // Calculating Acl
-        JointAclArray[cur_sample][0] = 2 * param1[cur_seg][2] + 6 * param1[cur_seg][3] * tau;
-        JointAclArray[cur_sample][1] = 2 * param2[cur_seg][2] + 6 * param2[cur_seg][3] * tau;
-        JointAclArray[cur_sample][2] = 2 * param3[cur_seg][2] + 6 * param3[cur_seg][3] * tau;
-        JointAclArray[cur_sample][3] = 2 * param4[cur_seg][2] + 6 * param4[cur_seg][3] * tau;
-      }
-    }
-
-    // find maximum Joint Velocities
-    vect JointVel_MAX = { 0, 0, 0, 0 };
+    
+    double h[4];
     for (int i = 0; i < 4; i++){
-      for (int j = 0; j<num_samples; j++){
-
-        if (fabs(JointVelArray[j][i])>JointVel_MAX[i]){
-          JointVel_MAX[i] = fabs(JointVelArray[j][i]);
+        h[i] = via_times[i + 1] - via_times[i];
+    }
+    
+    
+    vect num_seg_samples = { 0, 0, 0, 0 };
+    double seg_offset[5] = { 0, 0, 0, 0, 0 };
+    num_samples = (via_times[num_via - 1] - via_times[0])*SAMPLING_RATE;
+    
+    // Calculating Sample Offsets and
+    for (int i = 0; i < num_via - 1; i++)
+    {
+        num_seg_samples[i] = (via_times[i + 1] - via_times[i]) * SAMPLING_RATE;
+        seg_offset[i + 1] = seg_offset[i] + num_seg_samples[i];
+        
+        // Loop through segments
+        for (int cur_seg = 0; cur_seg < num_via - 1; cur_seg++)
+        {
+            // Sample within segments
+            for (int cur_sample = seg_offset[cur_seg]; cur_sample < seg_offset[cur_seg + 1]; cur_sample++)
+            {
+                // Parameterized Time
+                double tau = (cur_sample - seg_offset[cur_seg]) / num_seg_samples[cur_seg];
+                
+                // Calculating Pos
+                
+                JointPosArray[cur_sample][0] = param1[cur_seg][0] + param1[cur_seg][1] * tau + param1[cur_seg][2] * pow(tau, 2) + param1[cur_seg][3] * pow(tau, 3);
+                JointPosArray[cur_sample][1] = param2[cur_seg][0] + param2[cur_seg][1] * tau + param2[cur_seg][2] * pow(tau, 2) + param2[cur_seg][3] * pow(tau, 3);
+                JointPosArray[cur_sample][2] = param3[cur_seg][0] + param3[cur_seg][1] * tau + param3[cur_seg][2] * pow(tau, 2) + param3[cur_seg][3] * pow(tau, 3);
+                JointPosArray[cur_sample][3] = param4[cur_seg][0] + param4[cur_seg][1] * tau + param4[cur_seg][2] * pow(tau, 2) + param4[cur_seg][3] * pow(tau, 3);
+                
+                // Calculating Vel
+                JointVelArray[cur_sample][0] = (1/h[cur_seg])*(param1[cur_seg][1] + 2 * param1[cur_seg][2] * tau + 3 * param1[cur_seg][3] * pow(tau, 2));
+                JointVelArray[cur_sample][1] = (1/h[cur_seg])*(param2[cur_seg][1] + 2 * param2[cur_seg][2] * tau + 3 * param2[cur_seg][3] * pow(tau, 2));
+                JointVelArray[cur_sample][2] = (1/h[cur_seg])*(param3[cur_seg][1] + 2 * param3[cur_seg][2] * tau + 3 * param3[cur_seg][3] * pow(tau, 2));
+                JointVelArray[cur_sample][3] = (1/h[cur_seg])*(param4[cur_seg][1] + 2 * param4[cur_seg][2] * tau + 3 * param4[cur_seg][3] * pow(tau, 2));
+                
+                // Calculating Acl
+                JointAclArray[cur_sample][0] = (1/pow(h[cur_seg],2))*(2 * param1[cur_seg][2] + 6 * param1[cur_seg][3] * tau);
+                JointAclArray[cur_sample][1] = (1/pow(h[cur_seg],2))*(2 * param2[cur_seg][2] + 6 * param2[cur_seg][3] * tau);
+                JointAclArray[cur_sample][2] = (1/pow(h[cur_seg],2))*(2 * param3[cur_seg][2] + 6 * param3[cur_seg][3] * tau);
+                JointAclArray[cur_sample][3] = (1/pow(h[cur_seg],2))*(2 * param4[cur_seg][2] + 6 * param4[cur_seg][3] * tau);
+            }
         }
-      }
-    }
-
-    //Save sampled trajectory into txt file
-    std::ofstream file("theoPoints.txt");
-    if (file.is_open()){
-      for (int i = 0; i < num_samples; i++)
-      {
-        for (int j = 0; j < 3; j++){
-          file << JointPosArray[i][j] << " ";
+        
+        // find maximum Joint Velocities
+        vect JointVel_MAX = { 0, 0, 0, 0 };
+        for (int i = 0; i < 4; i++){
+            for (int j = 0; j<num_samples; j++){
+                
+                if (fabs(JointVelArray[j][i])>JointVel_MAX[i]){
+                    JointVel_MAX[i] = fabs(JointVelArray[j][i]);
+                }
+            }
         }
-        file << std::endl;
-
-      }
-      file.close();
+        
+        //Save sampled trajectory into txt file
+        std::ofstream file("theoPoints.txt");
+        if (file.is_open()){
+            for (int i = 0; i < num_samples; i++)
+            {
+                for (int j = 0; j < VECTOR_SIZE; j++){
+                    file << JointPosArray[i][j] << " ";
+                }
+                file << std::endl;
+                
+            }
+            file.close();
+        }
+        else{
+            std::cout << "unable to open file";
+        }
+        std::ofstream file2("theoVel.txt");
+        if (file2.is_open()){
+            for (int i = 0; i < num_samples; i++)
+            {
+                for (int j = 0; j < VECTOR_SIZE; j++){
+                    file2 << JointVelArray[i][j] << " ";
+                }
+                file2 << std::endl;
+                
+            }
+            file2.close();
+        }
+        else{
+            std::cout << "unable to open file";
+        }
+        std::ofstream file3("theoAcl.txt");
+        if (file3.is_open()){
+            for (int i = 0; i < num_samples; i++)
+            {
+                for (int j = 0; j < VECTOR_SIZE; j++){
+                    file3 << JointAclArray[i][j] << " ";
+                }
+                file3 << std::endl;
+                
+            }
+            file3.close();
+        }
+        else{
+            std::cout << "unable to open file";
+        }
+        
+        
     }
-    else{
-      std::cout << "unable to open file";
-    }
-  }
 }
+
 
 // Execute Trajectory
 void TraExec( vect* JointPosArray, vect* JointVelArray, vect* JointAccArray, double sampling_rate, unsigned int num_of_samples)
