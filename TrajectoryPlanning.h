@@ -61,20 +61,21 @@ void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double
     }
     in.close();
     for(int i=0;i<num_via;i++){
-        via_times[i]=temp[0][i];
+        via_times[i]=temp[i][0];
     }
     
+    
     for (int i = 0; i<num_via; i++){
-        x_via[i]=temp[1][i];
+        x_via[i]=temp[i][1];
     }
     for (int i = 0; i<num_via; i++){
-        y_via[i]=temp[2][i];
+        y_via[i]=temp[i][2];
     }
     for (int i = 0; i<num_via; i++){
-        z_via[i]=temp[3][i];
+        z_via[i]=temp[i][3];
     }
     for (int i = 0; i<num_via; i++){
-        phi_via[i]=temp[4][i];
+        phi_via[i]=temp[i][4];
     }
 }
 
