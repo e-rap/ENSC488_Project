@@ -12,6 +12,7 @@
 #define SAMPLING_RATE 120
 #define MAX_TIME 60
 #define MAX_DATA_POINTS SAMPLING_RATE*MAX_TIME
+#define filename "viapoints2.txt"
 
 /////////////////////////////////////
 // Global Constants and Parameters //
