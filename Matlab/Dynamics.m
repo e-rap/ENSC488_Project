@@ -52,7 +52,7 @@ Izeros = sym(zeros(3,3));
 InertiaArray(:,:,1) = Izeros;
 InertiaArray(:,:,2) = Izeros;
 InertiaArray(:,:,3) = Izeros;
-InertiaArray(:,:,4) = [ 0 0 0; 0 0 0; 0 0 m4*L8^2];
+InertiaArray(:,:,4) = [ 0 0 0; 0 m4*L8^2 0; 0 0 m4*L8^2];
 
 
 %angular vel/accel | vel/accel
@@ -132,14 +132,15 @@ T(1) = JointnArray(:,1).' * Zvec;
 T(2) = JointnArray(:,2).' * Zvec;
 T(3) = JointfArray(:,3).' * Zvec;
 T(4) = JointnArray(:,4).' * Zvec;
+T=T.';
 
-eqn1 = simplify(T1 == T(1));
-eqn2 = simplify(T2 == T(2));
-eqn3 = simplify(f3 == T(3));
-eqn4 = simplify(T4 == T(4));
+eqn1 = simplify(T(1));
+eqn2 = simplify(T(2));
+eqn3 = simplify(T(3));
+eqn4 = simplify(T(4));
 
 c=[thetaa1; thetaa2; da3; thetaa4];
-[M] = equationsToMatrix([eqn1, eqn2, eqn3, eqn4], [thetaa1 thetaa2 da3 thetaa4]);
+[M,b] = equationsToMatrix([eqn1, eqn2, eqn3, eqn4], [thetaa1 thetaa2 da3 thetaa4]);
 EqnVector = [T(1);T(2);T(3);T(4)]-M*c;
 M=simplify(M);
 
@@ -155,3 +156,5 @@ G(3)=-(m3+m4)*g;
 G(4)=sym(0);
 G=G.';
 
+Tsol=[T1;T2;f3;T4];
+Thetaa=simplify(inv(M)*(Tsol-V-G));
