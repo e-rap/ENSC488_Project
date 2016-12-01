@@ -6,9 +6,6 @@
 //  Copyright © 2016 Christian Liedl. All rights reserved.
 //
 
-
-
-
 #include "matrix.h"
 #include "RobotGlobals.h"
 #include <exception>
@@ -30,12 +27,12 @@ void Torque2Joint(vect Torque, vect JointPos, vect JointVel, vect JointAccel, ve
     double thetav1=DEG2RAD(JointVel[0]);
     double thetav2=DEG2RAD(JointVel[1]);
     double dv3=JointVel[2];
-    double thetav4=DEG2RAD(JointVel[4]);
+    double thetav4=DEG2RAD(JointVel[3]);
     
     double thetaa1=DEG2RAD(JointAccel[0]);
     double thetaa2=DEG2RAD(JointAccel[1]);
     double da3=JointAccel[2];
-    double thetaa4=DEG2RAD(JointAccel[4]);
+    double thetaa4=DEG2RAD(JointAccel[3]);
     
     double T1=Torque[0];
     double T2=Torque[1];
@@ -71,12 +68,12 @@ void Joint2Torque(vect &TorqueOut, vect JointPos, vect JointVel, vect JointAccel
     double thetav1=DEG2RAD(JointVel[0]);
     double thetav2=DEG2RAD(JointVel[1]);
     double dv3=JointVel[2];
-    double thetav4=DEG2RAD(JointVel[4]);
+    double thetav4=DEG2RAD(JointVel[3]);
     
     double thetaa1=DEG2RAD(JointAccel[0]);
     double thetaa2=DEG2RAD(JointAccel[1]);
     double da3=JointAccel[2];
-    double thetaa4=DEG2RAD(JointAccel[4]);
+    double thetaa4=DEG2RAD(JointAccel[3]);
     
     
     
