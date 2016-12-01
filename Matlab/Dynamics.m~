@@ -141,7 +141,6 @@ eqn4 = simplify(T4 == T(4));
 c=[thetaa1; thetaa2; da3; thetaa4];
 [M] = equationsToMatrix([eqn1, eqn2, eqn3, eqn4], [thetaa1 thetaa2 da3 thetaa4]);
 EqnVector = [T(1);T(2);T(3);T(4)]-M*c;
-M=simplify(M);
 
 V(1)=simplify(EqnVector(1));
 V(2)=simplify(EqnVector(2));
