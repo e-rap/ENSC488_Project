@@ -52,13 +52,13 @@ Izeros = sym(zeros(3,3));
 Inertia(:,:,1) = Izeros;
 Inertia(:,:,2) = Izeros;
 Inertia(:,:,3) = Izeros;
-Inertia(:,:,4) = [ 0 0 0; 0 m4*L8^2 0; 0 0 m4*L8^2];
+Inertia(:,:,4) = Izeros;
 
 
 %angular vel/accel | vel/accel
+Omega = sym(zeros(3,5));
 OmegaDot = sym(zeros(3,5));
-AngAccelArray = sym(zeros(3,5));
-VelArray = sym(zeros(3,5));
+Vel = sym(zeros(3,5));
 
 Accel = sym(zeros(3,5));
 Accel(:,1) = [0;0;g];
@@ -76,17 +76,17 @@ JointVel(3) = dv3;
 JointVel(4) = sym(0);
 
 %Joint AngAccel
-JointOmega(1) = thetaa1;
-JointOmega(2) = thetaa2;
-JointOmega(3) = 0;
-JointOmega(4) = thetaa4;
+JointOmegaDot(1) = thetaa1;
+JointOmegaDot(2) = thetaa2;
+JointOmegaDot(3) = 0;
+JointOmegaDot(4) = thetaa4;
 
 
 %Joint Accel
-JointOmegaDot(1) = sym(0);
-JointOmegaDot(2) = sym(0);
-JointOmegaDot(3) = da3;
-JointOmegaDot(4) = sym(0);
+JointAccel(1) = sym(0);
+JointAccel(2) = sym(0);
+JointAccel(3) = da3;
+JointAccel(4) = sym(0);
 
 % Center of Mass Accel Array
 AccelCM = sym(zeros(3,4));
@@ -96,10 +96,10 @@ Zvec = [0;0;1];
 
 %equations
 for i = 1:4
-    OmegaDot(:,i+1) = (Rotation(:,:,i).') * OmegaDot(:,i) + (JointOmega(i)*Zvec); %JointANgVelArray(i) because Sizes
-    AngAccelArray(:,i+1) = (Rotation(:,:,i).') * AngAccelArray(:,i) + cross(((Rotation(:,:,i).')*OmegaDot(:,i)),(JointOmega(i))* Zvec) + JointOmega(i)*Zvec;
-    Accel(:,i+1) = (Rotation(:,:,i).')*(cross(AngAccelArray(:,i), FrameOrigin(:,i)) + cross(OmegaDot(:,i),cross(OmegaDot(:,i),FrameOrigin(:,i)))+ Accel(:,i)) + 2*cross(OmegaDot(:,i+1),JointVel(i)*Zvec) + JointOmegaDot(i)*Zvec;
-    AccelCM(:,i) = cross(AngAccelArray(:,i+1),CM(:,i)) + cross(OmegaDot(:,i+1),OmegaDot(:,i+1)+CM(:,i)) + Accel(:,i+1);
+    Omega(:,i+1) = (Rotation(:,:,i).') * Omega(:,i) + (JointOmega(i)*Zvec); %JointANgVelArray(i) because Sizes
+    OmegaDot(:,i+1) = (Rotation(:,:,i).') * OmegaDot(:,i) + cross(((Rotation(:,:,i).')*Omega(:,i)),(JointOmega(i))* Zvec) + JointOmegaDot(i)*Zvec;
+    Accel(:,i+1) = (Rotation(:,:,i).')*(cross(OmegaDot(:,i), FrameOrigin(:,i)) + cross(Omega(:,i),cross(Omega(:,i),FrameOrigin(:,i)))+ Accel(:,i)) + 2*cross(Omega(:,i+1),JointVel(i)*Zvec) + JointAccel(i)*Zvec;
+    AccelCM(:,i) = cross(OmegaDot(:,i+1),CM(:,i)) + cross(Omega(:,i+1),Omega(:,i+1)+CM(:,i)) + Accel(:,i+1);
 end
 
 
@@ -119,7 +119,7 @@ N = sym(zeros(3,4));
  for i = 1:4
     F(:,i) = Mass(i) * AccelCM(:,i);  
  end
- N(:,4) = Inertia(:,:,4) * AngAccelArray(:,5) + cross(OmegaDot(:,5),Inertia(:,:,4)*OmegaDot(:,5));
+ N(:,4) = Inertia(:,:,4) * OmegaDot(:,5) + cross(Omega(:,5),Inertia(:,:,4)*Omega(:,5));
  
 for i = 4:-1:1
    Jointf(:,i) =  F(:,i) + Rotation(:,:,i+1)*Jointf(:,i+1);
