@@ -20,7 +20,7 @@ void Torque2Joint(vect Torque, vect JointPos, vect JointVel, vect& JointPosOut, 
 
 
   for (int i = 0; i < VECTOR_SIZE; i++){
-    Torque[i] = 1000*Torque[i];
+    Torque[i] = 1000.0*Torque[i];
   }
 
   //    double theta1=DEG2RAD(JointPos[0]);
@@ -60,6 +60,12 @@ void Torque2Joint(vect Torque, vect JointPos, vect JointVel, vect& JointPosOut, 
     JointVelOut[i] = JointVel[i] + JointAccelOut[i] * DeltaT;
     JointPosOut[i] = JointPos[i] + JointVel[i] * DeltaT + 0.5*JointAccelOut[i] * pow(DeltaT, 2);
   }
+    
+    
+    for (int i = 0; i < VECTOR_SIZE; i++){
+        Torque[i] = 0.001*Torque[i];
+    }
+    
 
 }
 
