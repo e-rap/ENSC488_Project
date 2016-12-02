@@ -5,7 +5,7 @@ clc
 % Constants
 %%%%%%%%%%%
 
-syms L1 L2 L3 L4 L5 L6 L7 L8 theta1 theta2 theta4 d3 m1 m2 m3 m4 g thetav1 thetav2 dv3 thetav4 thetaa1 thetaa2 da3 thetaa4 T1 T2 f3 T4
+syms L1 L2 L3 L4 L5 L6 L7 L8 theta1 theta2 theta4 d3 m1 m2 m3 m4 g thetav1 thetav2 dv3 thetav4 thetaa1 thetaa2 da3 thetaa4 T1 T2 f3 T4 FrictionCoef
 
 %center of mass
 P1c1 = sym([0;0;0]);
@@ -119,7 +119,6 @@ N = sym(zeros(3,4));
  for i = 1:4
     F(:,i) = Mass(i) * AccelCM(:,i);  
  end
- N(:,4) = Inertia(:,:,4) * OmegaDot(:,5) + cross(Omega(:,5),Inertia(:,:,4)*Omega(:,5));
  
 for i = 4:-1:1
    Jointf(:,i) =  F(:,i) + Rotation(:,:,i+1)*Jointf(:,i+1);
@@ -134,13 +133,15 @@ T(3) = Jointf(:,3).' * Zvec;
 T(4) = Jointn(:,4).' * Zvec;
 T=T.';
 
-eqn1 = simplify(T(1));
-eqn2 = simplify(T(2));
-eqn3 = simplify(T(3));
-eqn4 = simplify(T(4));
+Friction(1) = FrictionCoef*thetav1;
+Friction(2) = FrictionCoef*thetav2;
+Friction(3) = FrictionCoef*dv3;
+Friction(4) = FrictionCoef*thetav4;
+Friction=Friction.';
+
 
 c=[thetaa1; thetaa2; da3; thetaa4];
-[M,b] = equationsToMatrix([eqn1, eqn2, eqn3, eqn4], [thetaa1 thetaa2 da3 thetaa4]);
+[M,b] = equationsToMatrix([T(1), T(2), T(3), T(4)], [thetaa1 thetaa2 da3 thetaa4]);
 EqnVector = [T(1);T(2);T(3);T(4)]-M*c;
 M=simplify(M);
 
@@ -157,4 +158,5 @@ G(4)=sym(0);
 G=G.';
 
 Tsol=[T1;T2;f3;T4];
-Thetaa=simplify(inv(M)*(Tsol-V-G));
+Thetaa=simplify(inv(M)*(Tsol-V-G-Friction));
+T=simplify(T+Friction);
