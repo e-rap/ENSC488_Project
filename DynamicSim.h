@@ -19,6 +19,10 @@
 void Torque2Joint(vect Torque, vect JointPos, vect JointVel, vect& JointPosOut, vect& JointVelOut, vect& JointAccelOut, double DeltaT){
 
 
+  for (int i = 0; i < VECTOR_SIZE; i++){
+    Torque[i] = 1000*Torque[i];
+  }
+
   //    double theta1=DEG2RAD(JointPos[0]);
   double theta2 = DEG2RAD(JointPos[1]);
   //    double d3=JointPos[2];
@@ -109,11 +113,6 @@ void DynamicSim(vect TorqueIn, vect JointPosIn, vect JointVelIn,
   int num_samples = SimDuration * SampleRate;
 
   double sample_time = (1.0 / SampleRate) * S_TO_MILIS;
-
-  // convert to Nmm
-  for (int i = 0; i < VECTOR_SIZE; i++){
-    TorqueIn[i] = 1000.0*TorqueIn[i];
-  }
 
   // Run until done sim time
   //std::cout << "GET READY!" << std::endl;
