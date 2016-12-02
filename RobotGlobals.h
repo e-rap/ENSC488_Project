@@ -28,9 +28,23 @@ const double L4 = 142.0f;
 const double L5 = 410.0f;
 const double L6 = 80.0f;
 const double L7 = 60.0f;
+const double L8 = 30.0f;
 const double GRIPPER_OFFSET = -10.0f;
 const double PICK_PLACE_TOLERANCE = 10.0f;
 const int NUM_OF_LINK_VARS = 4;
+const double m1 = 1.0;
+const double m2 = 1.7;
+const double m3 = 1.0;
+const double m4 = 1.7;
+const double g = 9.81*1000;
+
+
+////////////////
+//Sample Times//
+////////////////
+double T1=0.1;
+double T2=0.01;
+double T3=0.001;
 
 //////////////////
 // Angle Limits //
