@@ -2,6 +2,7 @@
 #define RobotGlobals_h__
 
 #include "matrix.h"
+#include <windows.h>
 #define DEBUG
 
 //////////////////////////
@@ -109,18 +110,22 @@ bool D3Check2(double dist)
 {
   return ((dist <= D3_MAX || dist >= D3_MIN) ? false : true);
 }
+
 bool VelTheta1Check(double vel)
 {
     return ((vel > VelTheta1_MAX || vel < -VelTheta1_MAX) ? false : true);
 }
+
 bool VelTheta2Check(double vel)
 {
     return ((vel > VelTheta2_MAX || vel < -VelTheta2_MAX) ? false : true);
 }
+
 bool VelD3Check(double vel)
 {
     return ((vel > VelD3_MAX || vel < -VelD3_MAX) ? false : true);
 }
+
 bool VelTheta4Check(double vel)
 {
     return ((vel > VelTheta4_MAX || vel < -VelTheta4_MAX) ? false : true);
@@ -148,5 +153,33 @@ void GetCurrentConfig(vect& curConfig)
   GetConfiguration(Config);
   VectorCopy(Config, curConfig);
 }
+
+
+/////////////////////
+// Timer Functions //
+/////////////////////
+
+double PCFreq = 0.0;
+__int64 CounterStart = 0;
+
+void StartCounter()
+{
+  LARGE_INTEGER li;
+  if (!QueryPerformanceFrequency(&li))
+    std::cout << "QueryPerformanceFrequency failed!\n";
+
+  PCFreq = double(li.QuadPart) / S_TO_MILIS;
+
+  QueryPerformanceCounter(&li);
+  CounterStart = li.QuadPart;
+}
+
+double GetCounter()
+{
+  LARGE_INTEGER li;
+  QueryPerformanceCounter(&li);
+  return double(li.QuadPart - CounterStart) / PCFreq;
+}
+
 
 #endif // RobotGlobals_h__

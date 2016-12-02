@@ -64,6 +64,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DynamicSim.h" />
     <ClInclude Include="ensc-488.h" />
     <ClInclude Include="InverseKin.h" />
     <ClInclude Include="matrix.h" />
