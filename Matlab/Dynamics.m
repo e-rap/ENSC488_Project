@@ -133,10 +133,10 @@ T(3) = Jointf(:,3).' * Zvec;
 T(4) = Jointn(:,4).' * Zvec;
 T=T.';
 
-Friction(1) = FrictionCoef*thetav1;
-Friction(2) = FrictionCoef*thetav2;
-Friction(3) = FrictionCoef*dv3;
-Friction(4) = FrictionCoef*thetav4;
+Friction(1) = -FrictionCoef*thetav1;
+Friction(2) = -FrictionCoef*thetav2;
+Friction(3) = -FrictionCoef*dv3;
+Friction(4) = -FrictionCoef*thetav4;
 Friction=Friction.';
 
 
