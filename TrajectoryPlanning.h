@@ -8,18 +8,7 @@
 #include "InverseKin.h"
 #include <fstream>
 
-void microsleep( double duration)
-{
-  StartCounter();
-  while (true)
-  {
-    if (GetCounter() >= duration)
-    {
-      return;
-    }
-  }
 
-}
 
 //Read Via points from text file "viapoints"
 void ReadViaPoints(double via_times[5], double x_via[5], double y_via[5], double z_via[5], double phi_via[5], int num_via) {

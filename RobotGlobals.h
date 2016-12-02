@@ -38,6 +38,7 @@ const double m2 = 1.7;
 const double m3 = 1.0;
 const double m4 = 1.7;
 const double g = 9.81*1000;
+const double FrictionCoef = 0.0;
 
 
 ////////////////
@@ -195,5 +196,17 @@ double GetCounter()
   return double(li.QuadPart - CounterStart) / PCFreq;
 }
 
+void microsleep(double duration)
+{
+  StartCounter();
+  while (true)
+  {
+    if (GetCounter() >= duration)
+    {
+      return;
+    }
+  }
+
+}
 
 #endif // RobotGlobals_h__

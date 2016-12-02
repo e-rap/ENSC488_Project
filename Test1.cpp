@@ -5,8 +5,11 @@
 #include "PickAndPlace.h"
 #include "TrajectoryPlanning.h"
 #include "RobotGlobals.h"
+#include "DynamicSim.h"
 
 using namespace std;
+
+#define NUM_DYNAMIC_SAMPLES 5*60
 
 // Globals //
 vect gCurrentConfig; // Current_Robot Configuration
@@ -271,6 +274,25 @@ void TrajectoryPlanning()
   DisplayV(config);
 }
 
+void DynamicSimHelper()
+{
+  vect T = { 10, 0, 0, 0};
+  vect pos = { 0, 0, -200, 0 };
+  vect vel = { 0, 0, 0, 0 };
+  vect accel = { 0, 0, 0, 0 };
+
+  vect posOut = { 0, 0, 0, 0 };
+  vect velOut = { 0, 0, 0, 0 };
+  vect accelOut = { 0, 0, 0, 0 };
+
+  vect posArray[NUM_DYNAMIC_SAMPLES];
+  vect velArray[NUM_DYNAMIC_SAMPLES];
+  vect accelArray[NUM_DYNAMIC_SAMPLES];
+
+  DynamicSim(T, pos, vel, posOut, velOut, accelOut, posArray, velArray, accelArray, 5.0, 60);
+
+}
+
 void InitRobot()
 {
   // Reset the Robot
@@ -329,6 +351,10 @@ void main()
     else if (user_input == 5)
     {
       TrajectoryPlanning();
+    }
+    else if (user_input == 6)
+    {
+      DynamicSimHelper();
     }
     else
     {
