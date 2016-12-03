@@ -16,10 +16,10 @@
 #define filename "viapoints2.txt"
 #define SAMPLING_RATE 10
 #define MAX_VIA_POINTS 5
-#define MAX_TIME 10
+#define MAX_TIME 30
 
 // Controller Gains
-vect kp = { 100.0, 100.0, 100.0, 100.0 };
+vect kp = { 175.0, 110.0, 40.0, 20.0 };
 vect kv = { 2.0*sqrt(kp[0]), 2.0*sqrt(kp[1]), 2.0*sqrt(kp[2]), 2.0*sqrt(kp[3]) };
 
 

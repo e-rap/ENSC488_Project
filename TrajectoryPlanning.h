@@ -301,11 +301,14 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
             }
         }
         
+
         //Save sampled trajectory into txt file
-        std::ofstream file("theoPoints.txt");
+        std::ofstream file("plannedP.txt");
         if (file.is_open()){
             for (int i = 0; i < num_samples; i++)
             {
+              double time = i * DELTA_T1;
+              file << time << " ";
                 for (int j = 0; j < VECTOR_SIZE; j++){
                     file << JointPosArray[i][j] << " ";
                 }
@@ -317,10 +320,12 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
         else{
             std::cout << "unable to open file";
         }
-        std::ofstream file2("theoVel.txt");
+        std::ofstream file2("plannedV.txt");
         if (file2.is_open()){
             for (int i = 0; i < num_samples; i++)
             {
+              double time = i * DELTA_T1;
+              file2 << time << " ";
                 for (int j = 0; j < VECTOR_SIZE; j++){
                     file2 << JointVelArray[i][j] << " ";
                 }
@@ -332,10 +337,12 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
         else{
             std::cout << "unable to open file";
         }
-        std::ofstream file3("theoAcl.txt");
+        std::ofstream file3("plannedA.txt");
         if (file3.is_open()){
             for (int i = 0; i < num_samples; i++)
             {
+              double time = i * DELTA_T1;
+              file3 << time << " ";
                 for (int j = 0; j < VECTOR_SIZE; j++){
                     file3 << JointAclArray[i][j] << " ";
                 }

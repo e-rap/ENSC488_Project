@@ -29,17 +29,13 @@ void RoboSim()
   std::ofstream simP;
   std::ofstream simV;
   std::ofstream simA;
-  std::ofstream plannedP;
-  std::ofstream plannedV;
-  std::ofstream plannedA;
+  std::ofstream torque;
   try 
   {
-    std::ofstream simP = OpenFile("simP.txt");
-    std::ofstream simV = OpenFile("simV.txt");
-    std::ofstream simA = OpenFile("simA.txt");
-    std::ofstream plannedP = OpenFile("plannedP.txt");
-    std::ofstream plannedV = OpenFile("plannedV.txt");
-    std::ofstream plannedA = OpenFile("plannedA.txt");
+    simP = OpenFile("simP.txt");
+    simV = OpenFile("simV.txt");
+    simA = OpenFile("simA.txt");
+    torque = OpenFile("torque.txt");
   }
   catch (std::exception &e)
   {
@@ -189,12 +185,18 @@ void RoboSim()
     DisplayConfiguration(FBPos);
 
     // Save point
-    Write2File(simP, (counter*DELTA_T3),FBPos);
+    double time = counter *DELTA_T3;
+    Write2File(simP, time, FBPos);
+    Write2File(simV, time, FBVel);
+    Write2File(simA, time, AccelOut);
+    Write2File(torque, time, Torque);
     microsleep(DELTA_T3*S_TO_MILIS);
   }
 
   CloseFile(simP);
-
+  CloseFile(simV);
+  CloseFile(simA);
+  CloseFile(torque);
 }
 
 void ForwardKin()

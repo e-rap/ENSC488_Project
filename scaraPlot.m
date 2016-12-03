@@ -115,24 +115,28 @@ plot(tPlanned, theta1PP, tSim, theta1SP)
 title('Joint 1 Position')
 xlabel('Time')
 ylabel('Position (\circ)')
+axis([0 inf -150 150]);
 
 subplot(3,4,2)
 plot(tPlanned, theta2PP, tSim, theta2SP)
 title('Joint 2 Position')
 xlabel('Time')
 ylabel('Position (\circ))')
+axis([0 inf -100 100]);
 
 subplot(3,4,3)
 plot(tPlanned, d3PP, tSim, d3SP)
 title('Joint 3 Position')
 xlabel('Time')
 ylabel('Position (mm)')
+axis([0 inf -200 -100]);
 
 subplot(3,4,4)
 plot(tPlanned, theta4PP, tSim, theta4SP)
 title('Joint 4 Position')
 xlabel('Time')
-ylabel('Position (\circ))')
+ylabel('Position (\circ)')
+axis([0 inf -160 160]);
 
 % Joint Velocities
 
@@ -140,13 +144,13 @@ subplot(3,4,5)
 plot(tPlanned, theta1PV, tSim, theta1SV)
 title('Joint 1 Velocity')
 xlabel('Time')
-ylabel('Velocity (\circ)/s)')
+ylabel('Velocity (\circ/s)')
 
 subplot(3,4,6)
 plot(tPlanned, theta2PV, tSim, theta2SV)
 title('Joint 2 Velocity')
 xlabel('Time')
-ylabel('Velocity (\circ)/s)')
+ylabel('Velocity (\circ/s)')
 
 subplot(3,4,7)
 plot(tPlanned, d3PV, tSim, d3SV)
@@ -158,7 +162,7 @@ subplot(3,4,8)
 plot(tPlanned, theta4PV, tSim, theta4SV)
 title('Joint 4 Velocity')
 xlabel('Time')
-ylabel('Velocity (\circ)/s)')
+ylabel('Velocity (\circ/s)')
 
 % Joint Accelerations
 
