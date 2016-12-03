@@ -237,7 +237,7 @@ std::ofstream OpenFile(std::string file_name)
   if (!fid.is_open())
   {
     std::cout << "Error: Cannot open file " << file_name.c_str() << std::endl;
-    throw exception("File Could not open!");
+    throw std::exception("File Could not open!");
   }
   return fid;
 }

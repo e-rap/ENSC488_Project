@@ -26,16 +26,28 @@ bool gGrasp = false;
 
 void RoboSim()
 {
-  std::ofstream simP = OpenFile("simP.txt");
-  std::ofstream simV = OpenFile("simV.txt");
-  std::ofstream simA = OpenFile("simA.txt");
-  std::ofstream plannedP = OpenFile("plannedP.txt");
-  std::ofstream plannedV = OpenFile("plannedV.txt");
-  std::ofstream plannedA = OpenFile("plannedA.txt");
-  if (!simP.is_open())
+  std::ofstream simP;
+  std::ofstream simV;
+  std::ofstream simA;
+  std::ofstream plannedP;
+  std::ofstream plannedV;
+  std::ofstream plannedA;
+  try 
   {
-    cout << "HELP!\n";
+    std::ofstream simP = OpenFile("simP.txt");
+    std::ofstream simV = OpenFile("simV.txt");
+    std::ofstream simA = OpenFile("simA.txt");
+    std::ofstream plannedP = OpenFile("plannedP.txt");
+    std::ofstream plannedV = OpenFile("plannedV.txt");
+    std::ofstream plannedA = OpenFile("plannedA.txt");
   }
+  catch (std::exception &e)
+  {
+    std::string msg = e.what();
+    std::cout << msg.c_str() << endl;
+    return;
+  }
+
 
 
   int num_via;
@@ -177,7 +189,7 @@ void RoboSim()
     DisplayConfiguration(FBPos);
 
     // Save point
-    Write2File(simP, FBPos);
+    Write2File(simP, (counter*DELTA_T3),FBPos);
     microsleep(DELTA_T3*S_TO_MILIS);
   }
 
