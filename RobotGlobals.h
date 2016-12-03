@@ -3,17 +3,41 @@
 
 #include "matrix.h"
 #include <windows.h>
-#define DEBUG
+#include <fstream>
+
+
+#define DEBUG // Leave Blank when not debugging
+
+//////////////
+//Parameters//
+//////////////
+
+// Via point file
+#define filename "viapoints2.txt"
+#define SAMPLING_RATE 10
+#define MAX_VIA_POINTS 5
+#define MAX_TIME 10
+
+// Controller Gains
+vect kp = { 100.0, 100.0, 100.0, 100.0 };
+vect kv = { 2.0*sqrt(kp[0]), 2.0*sqrt(kp[1]), 2.0*sqrt(kp[2]), 2.0*sqrt(kp[3]) };
+
 
 //////////////////////////
 // Trajectory Constants //
 //////////////////////////
 #define S_TO_MILIS 1000.0
-#define MAX_VIA_POINTS 5
-#define SAMPLING_RATE 120
-#define MAX_TIME 60
-#define MAX_DATA_POINTS SAMPLING_RATE*MAX_TIME
-#define filename "viapoints2.txt"
+
+#define SAMPLING_RATE_T1 SAMPLING_RATE
+#define SAMPLING_RATE_T2 (SAMPLING_RATE_T1*10)
+#define SAMPLING_RATE_T3 (SAMPLING_RATE_T2*10)
+
+#define DELTA_T1 ((double)1.0/SAMPLING_RATE_T1)
+#define DELTA_T2 ((double)1.0/SAMPLING_RATE_T2)
+#define DELTA_T3 ((double)1.0/SAMPLING_RATE_T3)
+
+#define MAX_DATA_POINTS ((int)SAMPLING_RATE_T1 * MAX_TIME)
+
 
 /////////////////////////////////////
 // Global Constants and Parameters //
@@ -22,31 +46,24 @@
 ////////////////////
 // Link Constants //
 ////////////////////
-const double L1 = 405.0f;
-const double L2 = 70.0f;
-const double L3 = 195.0f;
-const double L4 = 142.0f;
-const double L5 = 410.0f;
-const double L6 = 80.0f;
-const double L7 = 60.0f;
-const double L8 = 30.0f;
-const double GRIPPER_OFFSET = -10.0f;
-const double PICK_PLACE_TOLERANCE = 10.0f;
+const double L1 = 405.0;
+const double L2 = 70.0;
+const double L3 = 195.0;
+const double L4 = 142.0;
+const double L5 = 410.0;
+const double L6 = 80.0;
+const double L7 = 60.0;
+const double L8 = 30.0;
+const double GRIPPER_OFFSET = -10.0;
+const double PICK_PLACE_TOLERANCE = 10.0;
 const int NUM_OF_LINK_VARS = 4;
-const double m1 = 1.0;
-const double m2 = 1.7;
-const double m3 = 1.0;
-const double m4 = 1.7;
+const double m1 = 1.7;
+const double m2 = 1.0;
+const double m3 = 1.7;
+const double m4 = 1.0;
 const double g = 9.81*1000;
-const double FrictionCoef = 0.0;
+const double FrictionCoef = 5.0;
 
-
-////////////////
-//Sample Times//
-////////////////
-double T1=0.1;
-double T2=0.01;
-double T3=0.001;
 
 //////////////////
 // Angle Limits //
@@ -207,6 +224,39 @@ void microsleep(double duration)
     }
   }
 
+}
+
+////////////////////////
+// File Writing Stuff //
+////////////////////////
+
+std::ofstream OpenFile(std::string file_name)
+{
+  std::ofstream fid;
+  fid.open(file_name, std::ofstream::out | std::ofstream::trunc);
+  if (!fid.is_open())
+  {
+    std::cout << "Error: Cannot open file " << file_name.c_str() << std::endl;
+    throw exception("File Could not open!");
+  }
+  return fid;
+}
+
+//Save sampled trajectory into txt file
+void Write2File(std::ofstream &fid, double time, vect out_vect)
+{
+  if (fid.is_open()){
+    fid << time << " ";
+    for (int j = 0; j < VECTOR_SIZE; j++){
+      fid << out_vect[j] << " ";
+      }
+      fid << std::endl;
+  }
+}
+
+void CloseFile(std::ofstream &fid)
+{
+  fid.close();
 }
 
 #endif // RobotGlobals_h__

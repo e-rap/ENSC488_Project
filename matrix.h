@@ -106,6 +106,14 @@ void VectorMulS(const vect a, double constant, vect& output)
   }
 }
 
+void VectorMultElement(const vect a, const vect b, vect &output)
+{
+  for (unsigned int i = 0; i < VECTOR_SIZE; i++)
+  {
+    output[i] = a[i] * b[i];
+  }
+}
+
 // Magnitude of the vect
 double VectorMag(const vect a)
 {

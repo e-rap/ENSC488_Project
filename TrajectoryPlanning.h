@@ -252,12 +252,12 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
     vect num_seg_samples = { 0, 0, 0, 0 };
     double seg_offset[5] = { 0, 0, 0, 0, 0 };
     int num_seg=num_via-1;
-    num_samples = (via_times[num_seg] - via_times[0])*SAMPLING_RATE;
+    num_samples = (via_times[num_seg] - via_times[0])*SAMPLING_RATE_T1;
     
     // Calculating Sample Offsets and
     for (int i = 0; i < num_via - 1; i++)
     {
-        num_seg_samples[i] = (via_times[i + 1] - via_times[i]) * SAMPLING_RATE;
+        num_seg_samples[i] = (via_times[i + 1] - via_times[i]) * SAMPLING_RATE_T1;
         seg_offset[i + 1] = seg_offset[i] + num_seg_samples[i];
         
         // Loop through segments
@@ -358,7 +358,14 @@ void TraExec( vect* JointPosArray, vect* JointVelArray, vect* JointAccArray, dou
 {
 	// Move Robot to First Point
 	std::cout << "Moving Robot to the initial Trajectory Point" << std::endl;
-	MoveToConfiguration(JointPosArray[0], true);
+
+#ifdef DEBUG
+  DisplayConfiguration(JointPosArray[0]);
+#endif
+
+#ifndef DEBUG
+  MoveToConfiguration(JointPosArray[0],true);
+#endif
 
 	// Calculate step duration
 	double mili = (1.0 / sampling_rate) * S_TO_MILIS;

@@ -104,7 +104,7 @@ void Joint2Torque(vect &TorqueOut, vect JointPos, vect JointVel, vect JointAccel
   }
 }
 
-void DynamicSim(vect TorqueIn, vect JointPosIn, vect JointVelIn, 
+void DynamicSim(vect& TorqueIn, vect JointPosIn, vect JointVelIn, 
                 vect& JointPosOut, vect& JointVelOut, vect& JointAccelOut, 
                 vect* JointPosArray, vect* JointVelArray, vect* JointAccelArray,
                 double SimDuration, double SampleRate)
@@ -118,7 +118,7 @@ void DynamicSim(vect TorqueIn, vect JointPosIn, vect JointVelIn,
   // calc number of samples
   int num_samples = SimDuration * SampleRate;
 
-  double sample_time = (1.0 / SampleRate) * S_TO_MILIS;
+  double sample_time = (1.0 / SampleRate);
 
   // Run until done sim time
   //std::cout << "GET READY!" << std::endl;
@@ -132,7 +132,10 @@ void DynamicSim(vect TorqueIn, vect JointPosIn, vect JointVelIn,
 
   for (int i = 0; i < num_samples; i++)
   {
+
+
     //calculate JointAccel from Torque for given JointPos, JointVel
+
     Torque2Joint(TorqueIn, JointPosIn, JointVelIn, JointPosOut, JointVelOut, JointAccelOut, sample_time);
 
     // Update Display
@@ -153,7 +156,7 @@ void DynamicSim(vect TorqueIn, vect JointPosIn, vect JointVelIn,
       JointVelIn[i] = JointVelOut[i];
     }
 
-    microsleep(sample_time);
+    microsleep(sample_time* S_TO_MILIS);
   }
 }
 

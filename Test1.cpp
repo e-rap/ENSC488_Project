@@ -6,10 +6,15 @@
 #include "TrajectoryPlanning.h"
 #include "RobotGlobals.h"
 #include "DynamicSim.h"
+#include "Controller.h"
+#include <fstream>
 
 using namespace std;
 
-#define NUM_DYNAMIC_SAMPLES 5*60
+#define SAMPLE_RATE_X 60.0
+#define SIM_DUR 10.0
+
+#define NUM_DYNAMIC_SAMPLES (int)(SAMPLE_RATE_X*SIM_DUR)
 
 // Globals //
 vect gCurrentConfig; // Current_Robot Configuration
@@ -18,6 +23,167 @@ bool gGrasp = false;
 //////////////////////
 // Helper Functions //
 //////////////////////
+
+void RoboSim()
+{
+  std::ofstream simP = OpenFile("simP.txt");
+  std::ofstream simV = OpenFile("simV.txt");
+  std::ofstream simA = OpenFile("simA.txt");
+  std::ofstream plannedP = OpenFile("plannedP.txt");
+  std::ofstream plannedV = OpenFile("plannedV.txt");
+  std::ofstream plannedA = OpenFile("plannedA.txt");
+  if (!simP.is_open())
+  {
+    cout << "HELP!\n";
+  }
+
+
+  int num_via;
+
+  cout << "Input Number of Via points in file";
+  cin >> num_via;
+  cout << endl;
+
+  matrix param1;
+  matrix param2;
+  matrix param3;
+  matrix param4;
+  MatrixInit(param1);
+  MatrixInit(param2);
+  MatrixInit(param3);
+  MatrixInit(param4);
+
+
+  double times[5] = { 0, 0, 0, 0, 0 };
+  double viax[5] = { 0, 0, 0, 0, 0 };
+  double viay[5] = { 0, 0, 0, 0, 0 };
+  double viaz[5] = { 0, 0, 0, 0, 0 };
+  double viaphi[5] = { 0, 0, 0, 0, 0 };
+
+  ReadViaPoints(times, viax, viay, viaz, viaphi, num_via);
+  vect jointPosVector[5] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } };
+
+  for (int i = 0; i < num_via; i++)
+  {
+    vect tempConfig = { 0, 0, 0, 0 };
+    vect closestSol = { 0, 0, 0, 0 };
+    bool sol = false;
+
+    matrix tempConfigMat;
+    MatrixInit(tempConfigMat);
+
+    tempConfig[0] = viax[i];
+    tempConfig[1] = viay[i];
+    tempConfig[2] = viaz[i];
+    tempConfig[3] = viaphi[i];
+    U2I(tempConfig, tempConfigMat);
+    vect zeroVect = { 0, 0, -200, 0 };
+    if (i == 0)
+    {
+      SOLVE(tempConfigMat, zeroVect, closestSol, zeroVect, sol);
+      if (!sol)
+      {
+        std::cout << "TRAJPLAN: No solutions found for input config" << std::endl;
+      }
+      VectorCopy(closestSol, jointPosVector[i]);
+      continue;
+    }
+
+    SOLVE(tempConfigMat, jointPosVector[i - 1], closestSol, zeroVect, sol);
+    if (!sol)
+    {
+      std::cout << "TRAJPLAN: No solutions found for input config" << std::endl;
+    }
+    VectorCopy(closestSol, jointPosVector[i]);
+  }
+
+  double via1[5] = { 0, 0, 0, 0, 0 };
+  double via2[5] = { 0, 0, 0, 0, 0 };
+  double via3[5] = { 0, 0, 0, 0, 0 };
+  double via4[5] = { 0, 0, 0, 0, 0 };
+
+  for (int i = 0; i < num_via; i++)
+  {
+    via1[i] = jointPosVector[i][0];
+    via2[i] = jointPosVector[i][1];
+    via3[i] = jointPosVector[i][2];
+    via4[i] = jointPosVector[i][3];
+  }
+
+  vect JointPosArray[MAX_DATA_POINTS];
+  vect JointVelArray[MAX_DATA_POINTS];
+  vect JointAccelArray[MAX_DATA_POINTS];
+
+  int num_samples = 0;
+
+  // Init Vectors
+  for (int i = 0; i < MAX_DATA_POINTS; i++)
+  {
+    VectorInit(JointPosArray[i]);
+    VectorInit(JointVelArray[i]);
+    VectorInit(JointAccelArray[i]);
+  }
+
+  TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, 5);
+  TraCalc(times, param1, param2, param3, param4, num_via, SAMPLING_RATE_T1, JointPosArray, JointVelArray, JointAccelArray, num_samples);
+
+  // Display Init
+  DisplayConfiguration(JointPosArray[0]);
+
+  vect DPos;
+  vect DVel;
+  vect DAccel;
+  vect FBPos;
+  vect FBVel;
+  vect Torque;
+  vect TempFBPos;
+  vect TempFBVel;
+  vect AccelOut;
+
+  VectorInit(DPos);
+  VectorInit(DVel);
+  VectorInit(DAccel);
+  VectorInit(FBPos);
+  VectorInit(FBVel);
+  VectorInit(Torque);
+  VectorInit(TempFBPos);
+  VectorInit(TempFBVel);
+  VectorInit(AccelOut);
+
+  VectorCopy(JointPosArray[0], FBPos);
+  VectorCopy(JointVelArray[0], FBVel);
+
+  for (int counter = 0; counter < num_samples * 100; counter++)
+  {
+    if ((counter % 100) == 0)
+    {
+      VectorCopy(JointPosArray[counter / 100], DPos);
+      VectorCopy(JointVelArray[counter / 100],DVel);
+      VectorCopy(JointAccelArray[counter / 100], DAccel);
+
+
+
+    }
+    if ((counter % 10) == 0)
+    {
+      FeebackControl(DPos, DVel, DAccel, FBPos, FBVel, Torque);
+    }
+    VectorCopy(FBPos, TempFBPos);
+    VectorCopy(FBVel, TempFBVel);
+
+    Torque2Joint(Torque, TempFBPos, TempFBVel, FBPos, FBVel, AccelOut, DELTA_T3);
+
+    // Display the new Position
+    DisplayConfiguration(FBPos);
+
+    // Save point
+    Write2File(simP, FBPos);
+    microsleep(DELTA_T3*S_TO_MILIS);
+  }
+
+  CloseFile(simP);
+
+}
 
 void ForwardKin()
 {
@@ -217,7 +383,7 @@ void TrajectoryPlanning()
     tempConfig[2] = viaz[i];
     tempConfig[3] = viaphi[i];
     U2I(tempConfig, tempConfigMat);
-    vect zeroVect = { 0, 0, 0, 0 };
+    vect zeroVect = { 0, 0, -200, 0 };
     if (i == 0)
     {
       SOLVE(tempConfigMat, zeroVect, closestSol, zeroVect, sol);
@@ -264,8 +430,10 @@ void TrajectoryPlanning()
   }
 
   TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, 5);
-  TraCalc(times, param1, param2, param3, param4, 5, SAMPLING_RATE, JointPosArray, JointVelArray, JointAccelArray,num_samples);
-  TraExec(JointPosArray, JointVelArray, JointAccelArray, SAMPLING_RATE, num_samples);
+  TraCalc(times, param1, param2, param3, param4, num_via, SAMPLING_RATE_T1, JointPosArray, JointVelArray, JointAccelArray,num_samples);
+
+  TraExec(JointPosArray, JointVelArray, JointAccelArray, SAMPLING_RATE_T1, num_samples);
+
   StopRobot();
   ResetRobot();
   JOINT config = { 0, 0, 0, 0 };
@@ -276,8 +444,9 @@ void TrajectoryPlanning()
 
 void DynamicSimHelper()
 {
-  vect T = { 10, 0, 0, 0};
-  vect pos = { 0, 0, -200, 0 };
+  //vect T = { 35.5334, 13.5407, -26.487, -1.6337};
+  vect T = { 10, 0, -26.487, 0};
+  vect pos = { -100, 100, -180, 0 };
   vect vel = { 0, 0, 0, 0 };
   vect accel = { 0, 0, 0, 0 };
 
@@ -289,7 +458,8 @@ void DynamicSimHelper()
   vect velArray[NUM_DYNAMIC_SAMPLES];
   vect accelArray[NUM_DYNAMIC_SAMPLES];
 
-  DynamicSim(T, pos, vel, posOut, velOut, accelOut, posArray, velArray, accelArray, 5.0, 60);
+  DynamicSim(T, pos, vel, posOut, velOut, accelOut, posArray, velArray, accelArray, SIM_DUR, SAMPLE_RATE_X);
+
 
 }
 
@@ -355,6 +525,10 @@ void main()
     else if (user_input == 6)
     {
       DynamicSimHelper();
+    }
+    else if (user_input == 7)
+    {
+      RoboSim();
     }
     else
     {
