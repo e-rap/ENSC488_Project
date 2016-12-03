@@ -103,8 +103,8 @@ y = XY(2,1:d);
 
 
 
-tPlanned = 0:0.01:10; % depends on sample time
-tSim = 0:0.001:10; % depends on time T3
+tPlanned = 0:1:299;% depends on sample time
+tSim = 0:1:299; % depends on time T3
 
 figure
 
