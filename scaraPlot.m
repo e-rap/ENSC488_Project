@@ -13,12 +13,12 @@ XYFile = fopen('XY.txt', 'r');
 
 % Setting format to read data (input file should be 'theta1 theta2 d3 theta4 /n')
 
-formatSpec1 = '%f %f %f '; % for joint variable files
+formatSpec1 = '%f %f %f %f %f '; % for joint variable files
 formatSpec2 = '%f %f '; % for x-y mapping file
 
 % Set up size of array where we'll be putting data
 
-size1 = [4 Inf];
+size1 = [5 Inf];
 size2 = [2 Inf];
 
 % Putting file contents into array of column vectors
@@ -51,47 +51,52 @@ fclose(XYFile);
 [a,b] = size(SP);
 [c,d] = size(XY);
 
+% Time 
+
+tPlanned = PP(1, 1:n);
+tSim = SP(1, 1:b);
+
 % Planned position
 
-theta1PP = PP(1, 1:n);
-theta2PP = PP(2, 1:n);
-d3PP = PP(3, 1:n);
-theta4PP = PP(4, 1:n);
+theta1PP = PP(2, 1:n);
+theta2PP = PP(3, 1:n);
+d3PP = PP(4, 1:n);
+theta4PP = PP(5, 1:n);
 
 % Planned velocity
 
-theta1PV = PV(1, 1:n);
-theta2PV = PV(2, 1:n);
-d3PV = PV(3, 1:n);
-theta4PV = PV(4, 1:n);
+theta1PV = PV(2, 1:n);
+theta2PV = PV(3, 1:n);
+d3PV = PV(4, 1:n);
+theta4PV = PV(5, 1:n);
 
 % Planned accel
 
-theta1PA = PA(1, 1:n);
-theta2PA = PA(2, 1:n);
-d3PA = PA(3, 1:n);
-theta4PA = PA(4, 1:n);
+theta1PA = PA(2, 1:n);
+theta2PA = PA(3, 1:n);
+d3PA = PA(4, 1:n);
+theta4PA = PA(5, 1:n);
 
 % Simulator Output position
 
-theta1SP = SP(1, 1:b);
-theta2SP = SP(2, 1:b);
-d3SP = SP(3, 1:b);
-theta4SP = SP(4, 1:b);
+theta1SP = SP(2, 1:b);
+theta2SP = SP(3, 1:b);
+d3SP = SP(4, 1:b);
+theta4SP = SP(5, 1:b);
 
 % Simulator Output velocity
 
-theta1SV = SV(1, 1:b);
-theta2SV = SV(2, 1:b);
-d3SV = SV(3, 1:b);
-theta4SV = SV(4, 1:b);
+theta1SV = SV(2, 1:b);
+theta2SV = SV(3, 1:b);
+d3SV = SV(4, 1:b);
+theta4SV = SV(5, 1:b);
 
 % Simulator Output accel
 
-theta1SA = SA(1, 1:b);
-theta2SA = SA(2, 1:b);
-d3SA = SA(3, 1:b);
-theta4SA = SA(4, 1:b);
+theta1SA = SA(2, 1:b);
+theta2SA = SA(3, 1:b);
+d3SA = SA(4, 1:b);
+theta4SA = SA(5, 1:b);
 
 % X-Y Mapping
 
@@ -100,11 +105,6 @@ y = XY(2,1:d);
 
 
 % PLOTTING!!!!!!! -----------------------------------
-
-
-
-tPlanned = 0:1:299;% depends on sample time
-tSim = 0:1:299; % depends on time T3
 
 figure
 
