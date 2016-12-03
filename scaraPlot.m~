@@ -62,7 +62,6 @@ fclose(torqueFile);
 
 tPlanned = PP(1, 1:n);
 tSim = SP(1, 1:b);
-tTorques(T(1, 1:f);
 
 % Planned position
 
@@ -114,10 +113,7 @@ y = XY(2,1:d);
 
 %Torques 
 T1=T(2,1:f);
-T2=T(3,1:f);
-F3=T(4,1:f);
-T4=T(5,1:f);
-
+T2=T(3,1:
 
 % PLOTTING!!!!!!! -----------------------------------
 
@@ -130,28 +126,24 @@ plot(tPlanned, theta1PP, tSim, theta1SP)
 title('Joint 1 Position')
 xlabel('Time')
 ylabel('Position (\circ)')
-axis([0 inf -150 150]);
 
 subplot(3,4,2)
 plot(tPlanned, theta2PP, tSim, theta2SP)
 title('Joint 2 Position')
 xlabel('Time')
 ylabel('Position (\circ))')
-axis([0 inf -100 100]);
 
 subplot(3,4,3)
 plot(tPlanned, d3PP, tSim, d3SP)
 title('Joint 3 Position')
 xlabel('Time')
 ylabel('Position (mm)')
-axis([0 inf -200 -100]);
 
 subplot(3,4,4)
 plot(tPlanned, theta4PP, tSim, theta4SP)
 title('Joint 4 Position')
 xlabel('Time')
-ylabel('Position (\circ)')
-axis([0 inf -160 160]);
+ylabel('Position (\circ))')
 
 % Joint Velocities
 
@@ -159,13 +151,13 @@ subplot(3,4,5)
 plot(tPlanned, theta1PV, tSim, theta1SV)
 title('Joint 1 Velocity')
 xlabel('Time')
-ylabel('Velocity (\circ/s)')
+ylabel('Velocity (\circ)/s)')
 
 subplot(3,4,6)
 plot(tPlanned, theta2PV, tSim, theta2SV)
 title('Joint 2 Velocity')
 xlabel('Time')
-ylabel('Velocity (\circ/s)')
+ylabel('Velocity (\circ)/s)')
 
 subplot(3,4,7)
 plot(tPlanned, d3PV, tSim, d3SV)
@@ -177,7 +169,7 @@ subplot(3,4,8)
 plot(tPlanned, theta4PV, tSim, theta4SV)
 title('Joint 4 Velocity')
 xlabel('Time')
-ylabel('Velocity (\circ/s)')
+ylabel('Velocity (\circ)/s)')
 
 % Joint Accelerations
 
@@ -213,30 +205,4 @@ title('X-Y Path of Tool')
 xlabel('X')
 ylabel('Y')
 
-%Torques
-
-figure
-subplot(2,2,1)
-plot(tTorques, T1)
-title('Torque 1')
-xlabel('Time')
-ylabel('Torque in Nm')
-
-subplot(2,2,2)
-plot(tTorques, T2)
-title('Torque 2')
-xlabel('Time')
-ylabel('Torque in Nm')
-
-subplot(2,2,3)
-plot(tTorques, F3)
-title('Torque 3')
-xlabel('Time')
-ylabel('Torque in Nm')
-
-subplot(2,2,4)
-plot(tTorques, T4)
-title('Torque 4')
-xlabel('Time')
-ylabel('Torque in Nm')
 
