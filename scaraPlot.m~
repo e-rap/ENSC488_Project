@@ -62,7 +62,6 @@ fclose(torqueFile);
 
 tPlanned = PP(1, 1:n);
 tSim = SP(1, 1:b);
-tTorques(T(1, 1:f);
 
 % Planned position
 
@@ -114,10 +113,7 @@ y = XY(2,1:d);
 
 %Torques 
 T1=T(2,1:f);
-T2=T(3,1:f);
-F3=T(4,1:f);
-T4=T(5,1:f);
-
+T2=T(3,1:
 
 % PLOTTING!!!!!!! -----------------------------------
 
@@ -209,30 +205,4 @@ title('X-Y Path of Tool')
 xlabel('X')
 ylabel('Y')
 
-%Torques
-
-figure
-subplot(2,2,1)
-plot(tTorques, T1)
-title('Torque 1')
-xlabel('Time')
-ylabel('Torque in Nm')
-
-subplot(2,2,2)
-plot(tTorques, T2)
-title('Torque 2')
-xlabel('Time')
-ylabel('Torque in Nm')
-
-subplot(2,2,3)
-plot(tTorques, F3)
-title('Torque 3')
-xlabel('Time')
-ylabel('Torque in Nm')
-
-subplot(2,2,4)
-plot(tTorques, T4)
-title('Torque 4')
-xlabel('Time')
-ylabel('Torque in Nm')
 
