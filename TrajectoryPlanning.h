@@ -252,7 +252,7 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
     vect num_seg_samples = { 0, 0, 0, 0 };
     double seg_offset[5] = { 0, 0, 0, 0, 0 };
     int num_seg=num_via-1;
-    num_samples = (via_times[num_seg] - via_times[0])*SAMPLING_RATE_T1;
+    num_samples = (via_times[num_seg] - via_times[0]) * SAMPLING_RATE_T1;
     
     // Calculating Sample Offsets and
     for (int i = 0; i < num_via - 1; i++)

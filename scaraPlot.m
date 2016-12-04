@@ -35,7 +35,7 @@ SA = fscanf(simAFile, formatSpec1, size1);
 
 XY = fscanf(XYFile, formatSpec2, size2);
 
-T = fscanf(torqueFile, fortmatSpec1, size1);
+T = fscanf(torqueFile, formatSpec1, size1);
 
 % Closing files
 
@@ -62,7 +62,7 @@ fclose(torqueFile);
 
 tPlanned = PP(1, 1:n);
 tSim = SP(1, 1:b);
-tTorques(T(1, 1:f);
+tTorques = T(1, 1:f);
 
 % Planned position
 

@@ -132,7 +132,7 @@ void RoboSim()
     VectorInit(JointAccelArray[i]);
   }
 
-  TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, 5);
+  TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, num_via);
   TraCalc(times, param1, param2, param3, param4, num_via, SAMPLING_RATE_T1, JointPosArray, JointVelArray, JointAccelArray, num_samples);
 
   // Display Init
@@ -443,7 +443,7 @@ void TrajectoryPlanning()
     VectorInit(JointAccelArray[i]);
   }
 
-  TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, 5);
+  TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, num_via);
   TraCalc(times, param1, param2, param3, param4, num_via, SAMPLING_RATE_T1, JointPosArray, JointVelArray, JointAccelArray,num_samples);
 
   TraExec(JointPosArray, JointVelArray, JointAccelArray, SAMPLING_RATE_T1, num_samples);

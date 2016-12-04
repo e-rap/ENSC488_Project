@@ -17,10 +17,11 @@
 #define DynamicSim_h
 
 void Torque2Joint(vect Torque, vect JointPos, vect JointVel, vect& JointPosOut, vect& JointVelOut, vect& JointAccelOut, double DeltaT){
-
+  vect tempT = { 0, 0, 0, 0 };
+  VectorCopy(Torque, tempT);
 
   for (int i = 0; i < VECTOR_SIZE; i++){
-    Torque[i] = 1000.0*Torque[i];
+    tempT[i] = 1000.0*tempT[i];
   }
 
   //    double theta1=DEG2RAD(JointPos[0]);
@@ -34,10 +35,10 @@ void Torque2Joint(vect Torque, vect JointPos, vect JointVel, vect& JointPosOut, 
   double thetav4 = DEG2RAD(JointVel[3]);
 
 
-  double T1 = Torque[0];
-  double T2 = Torque[1];
-  double f3 = Torque[2];
-  double T4 = Torque[3];
+  double T1 = tempT[0];
+  double T2 = tempT[1];
+  double f3 = tempT[2];
+  double T4 = tempT[3];
 
   JointAccelOut[0] = (1.0/(L3*L3)*(L4*L8*T1*m3*2.0+L4*L8*T1*m4-L4*L8*T2*m3*2.0-L4*L8*T2*m4+FrictionCoef*L4*L8*m3*thetav1*2.0-FrictionCoef*L4*L8*m3*thetav2*2.0+FrictionCoef*L4*L8*m4*thetav1-FrictionCoef*L4*L8*m4*thetav2-L3*L4*T4*m3*cos(theta2+theta4)-L3*L4*T4*m4*cos(theta2+theta4)-L3*L8*T2*m3*cos(theta2)*2.0-L3*L8*T2*m4*cos(theta2)-L3*L8*T4*m3*cos(theta2)*2.0-L3*L8*T4*m4*cos(theta2)+L3*L4*T4*m3*cos(theta2-theta4)+L3*L4*T4*m4*cos(theta2-theta4)+L3*L8*T2*m4*cos(theta2-theta4*2.0)+L3*L8*T4*m4*cos(theta2-theta4*2.0)-L4*L8*T1*m4*cos(theta4*2.0)+L4*L8*T2*m4*cos(theta4*2.0)+FrictionCoef*L3*L4*m3*thetav4*cos(theta2-theta4)+FrictionCoef*L3*L4*m4*thetav4*cos(theta2-theta4)+FrictionCoef*L3*L8*m4*thetav2*cos(theta2-theta4*2.0)+FrictionCoef*L3*L8*m4*thetav4*cos(theta2-theta4*2.0)+L3*(L4*L4)*L8*(m3*m3)*(thetav1*thetav1)*sin(theta2)*2.0+L3*(L4*L4)*L8*(m3*m3)*(thetav2*thetav2)*sin(theta2)*2.0-FrictionCoef*L4*L8*m4*thetav1*cos(theta4*2.0)+FrictionCoef*L4*L8*m4*thetav2*cos(theta4*2.0)+(L3*L3)*L4*L8*(m3*m3)*(thetav1*thetav1)*sin(theta2*2.0)-FrictionCoef*L3*L4*m3*thetav4*cos(theta2+theta4)-FrictionCoef*L3*L4*m4*thetav4*cos(theta2+theta4)-FrictionCoef*L3*L8*m3*thetav2*cos(theta2)*2.0-FrictionCoef*L3*L8*m4*thetav2*cos(theta2)-FrictionCoef*L3*L8*m3*thetav4*cos(theta2)*2.0-FrictionCoef*L3*L8*m4*thetav4*cos(theta2)+L3*(L4*L4)*L8*m3*m4*(thetav1*thetav1)*sin(theta2)*2.0+L3*(L4*L4)*L8*m3*m4*(thetav2*thetav2)*sin(theta2)*2.0+L3*(L4*L4)*L8*(m3*m3)*thetav1*thetav2*sin(theta2)*4.0+(L3*L3)*L4*L8*m3*m4*(thetav1*thetav1)*sin(theta2*2.0)+L3*(L4*L4)*L8*m3*m4*thetav1*thetav2*sin(theta2)*4.0))/(L4*L8*(m2*m3*2.0+m2*m4+m3*m4-(m3*m3)*cos(theta2*2.0)+m3*m3-m3*m4*cos(theta2*2.0)-m2*m4*cos(theta4*2.0)));
     
@@ -63,7 +64,7 @@ void Torque2Joint(vect Torque, vect JointPos, vect JointVel, vect& JointPosOut, 
     
     
     for (int i = 0; i < VECTOR_SIZE; i++){
-        Torque[i] = 0.001*Torque[i];
+      tempT[i] = 0.001*tempT[i];
     }
     
 
