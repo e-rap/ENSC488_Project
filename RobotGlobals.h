@@ -7,6 +7,7 @@
 
 
 #define DEBUG // Leave Blank when not debugging
+#define WRITE_REAL_TIME // Comment out to remove real time writing to file
 
 //////////////
 //Parameters//
@@ -253,6 +254,16 @@ void Write2File(std::ofstream &fid, double time, vect out_vect)
       }
       fid << std::endl;
   }
+}
+
+void Write2File(std::ofstream &fid, vect CartCoords)
+{
+	if (fid.is_open()) {
+		for (int j = 0; j < 2; j++) {
+			fid << CartCoords[j] << " ";
+		}
+		fid << std::endl;
+	}
 }
 
 void CloseFile(std::ofstream &fid)

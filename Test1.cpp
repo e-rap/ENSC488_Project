@@ -24,18 +24,32 @@ bool gGrasp = false;
 // Helper Functions //
 //////////////////////
 
+void WriteJointToCartisan(std::ofstream& fid, vect JointTraj)
+{
+
+	vect cartcoords = { 0,0,0,0 };
+	WHERE(JointTraj[0], JointTraj[1], JointTraj[2], JointTraj[3], cartcoords);
+	Write2File(fid, cartcoords);
+
+}
+
 void RoboSim()
 {
   std::ofstream simP;
   std::ofstream simV;
   std::ofstream simA;
   std::ofstream torque;
+  std::ofstream XY;
+  std::ofstream simXY;
+
   try 
   {
     simP = OpenFile("simP.txt");
     simV = OpenFile("simV.txt");
     simA = OpenFile("simA.txt");
     torque = OpenFile("torque.txt");
+	XY = OpenFile("XY.txt");
+	simXY = OpenFile("simXY.txt");
   }
   catch (std::exception &e)
   {
@@ -135,6 +149,12 @@ void RoboSim()
   TraGen(times, via1, via2, via3, via4, param1, param2, param3, param4, num_via);
   TraCalc(times, param1, param2, param3, param4, num_via, SAMPLING_RATE_T1, JointPosArray, JointVelArray, JointAccelArray, num_samples);
 
+  // Write Simulated Trajectory to file
+  for (int i = 0; i < num_samples; i++)
+  {
+	  WriteJointToCartisan(simXY, JointPosArray[i]);
+  }
+
   // Display Init
   DisplayConfiguration(JointPosArray[0]);
 
@@ -186,10 +206,14 @@ void RoboSim()
 
     // Save point
     double time = counter *DELTA_T3;
+
+#ifdef WRITE_REAL_TIME
     Write2File(simP, time, FBPos);
     Write2File(simV, time, FBVel);
     Write2File(simA, time, AccelOut);
     Write2File(torque, time, Torque);
+	WriteJointToCartisan(XY, FBPos);
+#endif
     microsleep(DELTA_T3*S_TO_MILIS);
   }
 
@@ -197,7 +221,11 @@ void RoboSim()
   CloseFile(simV);
   CloseFile(simA);
   CloseFile(torque);
+  CloseFile(XY);
+  CloseFile(simXY);
 }
+
+
 
 void ForwardKin()
 {

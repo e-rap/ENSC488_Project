@@ -1,3 +1,5 @@
+clear all;
+clc;
 
 % Opening files
 
@@ -12,6 +14,7 @@ simAFile = fopen('simA.txt', 'r');
 torqueFile = fopen('torque.txt', 'r');
 
 XYFile = fopen('XY.txt', 'r');
+simXYFile = fopen('simXY.txt', 'r');
 
 % Setting format to read data (input file should be 'theta1 theta2 d3 theta4 /n')
 
@@ -34,6 +37,7 @@ SV = fscanf(simVFile, formatSpec1, size1);
 SA = fscanf(simAFile, formatSpec1, size1);
 
 XY = fscanf(XYFile, formatSpec2, size2);
+SXY = fscanf(simXYFile, formatSpec2, size2);
 
 T = fscanf(torqueFile, formatSpec1, size1);
 
@@ -48,6 +52,7 @@ fclose(simVFile);
 fclose(simAFile);
 
 fclose(XYFile);
+fclose(simXYFile);
 
 fclose(torqueFile);
 
@@ -57,6 +62,7 @@ fclose(torqueFile);
 [a,b] = size(SP);
 [c,d] = size(XY);
 [e,f] = size(T);
+[g,h] = size(SXY);
 
 % Time 
 
@@ -111,6 +117,9 @@ theta4SA = SA(5, 1:b);
 x = XY(1,1:d);
 y = XY(2,1:d);
 
+% X-Y Mapping Sim
+sim_x = SXY(1,1:h);
+sim_y = SXY(2,1:h);
 
 %Torques 
 T1=T(2,1:f);
@@ -208,7 +217,7 @@ ylabel('Acceleration (\circ/s^{2})')
 % X-Y Map
 
 figure
-plot(x,y)
+plot(x,y, sim_x, sim_y)
 title('X-Y Path of Tool')
 xlabel('X')
 ylabel('Y')
