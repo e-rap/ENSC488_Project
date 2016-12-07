@@ -11,11 +11,6 @@
 
 using namespace std;
 
-#define SAMPLE_RATE_X 60.0
-#define SIM_DUR 10.0
-
-#define NUM_DYNAMIC_SAMPLES (int)(SAMPLE_RATE_X*SIM_DUR)
-
 // Globals //
 vect gCurrentConfig; // Current_Robot Configuration
 bool gGrasp = false;
@@ -224,8 +219,6 @@ void RoboSim()
   CloseFile(XY);
   CloseFile(simXY);
 }
-
-
 
 void ForwardKin()
 {
@@ -491,16 +484,19 @@ void DynamicSimHelper()
   vect pos = { -100, 100, -180, 0 };
   vect vel = { 0, 0, 0, 0 };
   vect accel = { 0, 0, 0, 0 };
+  double dur = 0.0;
+
+  ReadDynSim(T, pos, vel, accel, dur, "DynSim.txt");
 
   vect posOut = { 0, 0, 0, 0 };
   vect velOut = { 0, 0, 0, 0 };
   vect accelOut = { 0, 0, 0, 0 };
 
-  vect posArray[NUM_DYNAMIC_SAMPLES];
-  vect velArray[NUM_DYNAMIC_SAMPLES];
-  vect accelArray[NUM_DYNAMIC_SAMPLES];
+  vect posArray[MAX_DATA_POINTS_SIM];
+  vect velArray[MAX_DATA_POINTS_SIM];
+  vect accelArray[MAX_DATA_POINTS_SIM];
 
-  DynamicSim(T, pos, vel, posOut, velOut, accelOut, posArray, velArray, accelArray, SIM_DUR, SAMPLE_RATE_X);
+  DynamicSim(T, pos, vel, posOut, velOut, accelOut, posArray, velArray, accelArray, dur, SIM_SAMPLE_RATE);
 
 
 }
@@ -533,6 +529,7 @@ void main()
   while (main_loop)
   {
     cout << "Pick From the list of options\n\t0 : Exit\n\t1 : ForwardKin\n\t2 : InverseKin\n\t3 : Pick and Place\n\t4 : Toggle Grasp\n";
+    cout << "\t5: Trajectory Planner" << endl << "\t6 : Dynamic Simulator" << endl << "\t7 : Full Controlled Simulation" << endl;
     cout << endl << ">";
     int user_input;
     cin >> user_input;

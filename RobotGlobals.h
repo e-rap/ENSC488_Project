@@ -7,7 +7,7 @@
 
 
 #define DEBUG // Leave Blank when not debugging
-#define WRITE_REAL_TIME // Comment out to remove real time writing to file
+//#define WRITE_REAL_TIME // Comment out to remove real time writing to file
 
 //////////////
 //Parameters//
@@ -39,6 +39,10 @@ vect kv = { 2.0*sqrt(kp[0]), 2.0*sqrt(kp[1]), 2.0*sqrt(kp[2]), 2.0*sqrt(kp[3]) }
 #define DELTA_T3 ((double)1.0/SAMPLING_RATE_T3)
 
 #define MAX_DATA_POINTS ((int)SAMPLING_RATE_T1 * MAX_TIME)
+
+#define SIM_SAMPLE_RATE 60
+#define SIM_MAX_TIME 20
+#define MAX_DATA_POINTS_SIM (SIM_SAMPLE_RATE*SIM_MAX_TIME)
 
 
 /////////////////////////////////////
@@ -271,7 +275,7 @@ void CloseFile(std::ofstream &fid)
   fid.close();
 }
 
-void ReadDynSim(vect& Torques, vect& Pos, vect& Vel, vect& Accel, std::string file_name) {
+void ReadDynSim(vect& Torques, vect& Pos, vect& Vel, vect& Accel, double& dur, std::string file_name) {
   vect temp = { 0, 0, 0, 0 };
   std::ifstream in(file_name.c_str()); // Open file
   if (!in) {
@@ -308,6 +312,8 @@ void ReadDynSim(vect& Torques, vect& Pos, vect& Vel, vect& Accel, std::string fi
   VectorCopy(temp, Accel);
   VectorInit(temp);
 
+  in >> dur;
+  
   in.close(); // Close file
 }
 
