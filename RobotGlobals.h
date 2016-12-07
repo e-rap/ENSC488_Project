@@ -271,4 +271,44 @@ void CloseFile(std::ofstream &fid)
   fid.close();
 }
 
+void ReadDynSim(vect& Torques, vect& Pos, vect& Vel, vect& Accel, std::string file_name) {
+  vect temp = { 0, 0, 0, 0 };
+  std::ifstream in(file_name.c_str()); // Open file
+  if (!in) {
+    std::cout << "Cannot open file.\n";
+    return;
+  }
+  for (int element = 0; element < VECTOR_SIZE; element++) {
+    in >> temp[element];
+  }
+  VectorInit(Torques);
+  VectorCopy(temp, Torques);
+  VectorInit(temp);
+
+
+  for (int element = 0; element < VECTOR_SIZE; element++) {
+    in >> temp[element];
+  }
+  VectorInit(Pos);
+  VectorCopy(temp, Pos);
+  VectorInit(temp);
+
+  for (int element = 0; element < VECTOR_SIZE; element++) {
+    in >> temp[element];
+  }
+  VectorInit(Vel);
+  VectorCopy(temp, Vel);
+  VectorInit(temp);
+
+
+  for (int element = 0; element < VECTOR_SIZE; element++) {
+    in >> temp[element];
+  }
+  VectorInit(Accel);
+  VectorCopy(temp, Accel);
+  VectorInit(temp);
+
+  in.close(); // Close file
+}
+
 #endif // RobotGlobals_h__
