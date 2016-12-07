@@ -283,12 +283,34 @@ void TraCalc(double via_times[5], matrix param1, matrix param2, matrix param3, m
                 JointVelArray[cur_sample][3] = (1/h[cur_seg])*(param4[cur_seg][1] + 2 * param4[cur_seg][2] * tau + 3 * param4[cur_seg][3] * pow(tau, 2));
                 
                 // Calculating Acl
-                JointAclArray[cur_sample][0] = (1/pow(h[cur_seg],2))*(2 * param1[cur_seg][2] + 6 * param1[cur_seg][3] * tau);
-                JointAclArray[cur_sample][1] = (1/pow(h[cur_seg],2))*(2 * param2[cur_seg][2] + 6 * param2[cur_seg][3] * tau);
-                JointAclArray[cur_sample][2] = (1/pow(h[cur_seg],2))*(2 * param3[cur_seg][2] + 6 * param3[cur_seg][3] * tau);
-                JointAclArray[cur_sample][3] = (1/pow(h[cur_seg],2))*(2 * param4[cur_seg][2] + 6 * param4[cur_seg][3] * tau);
+                JointAclArray[cur_sample][0] = (1/pow(h[num_via-2],2))*(2 * param1[num_via-2][2] + 6 * param1[num_via-2][3] * tau);
+                JointAclArray[cur_sample][1] = (1/pow(h[num_via-2],2))*(2 * param2[num_via-2][2] + 6 * param2[num_via-2][3] * tau);
+                JointAclArray[cur_sample][2] = (1/pow(h[num_via-2],2))*(2 * param3[num_via-2][2] + 6 * param3[num_via-2][3] * tau);
+                JointAclArray[cur_sample][3] = (1/pow(h[num_via-2],2))*(2 * param4[num_via-2][2] + 6 * param4[num_via-2][3] * tau);
             }
         }
+        
+        
+        //Calculating last sample
+        //Calculating Pos
+        JointPosArray[num_samples][0] = param1[num_via-2][0] + param1[num_via-2][1] + param1[num_via-2][2] + param1[num_via-2][3];
+        JointPosArray[num_samples][1] = param2[num_via-2][0] + param2[num_via-2][1] + param2[num_via-2][2] + param2[num_via-2][3];
+        JointPosArray[num_samples][2] = param3[num_via-2][0] + param3[num_via-2][1] + param3[num_via-2][2] + param3[num_via-2][3];
+        JointPosArray[num_samples][3] = param4[num_via-2][0] + param4[num_via-2][1] + param4[num_via-2][2] + param4[num_via-2][3];
+        
+        // Calculating Vel
+        JointVelArray[num_samples][0] = (1/h[num_via-2])*(param1[num_via-2][1] + 2 * param1[num_via-2][2] + 3 * param1[num_via-2][3];
+        JointVelArray[num_samples][1] = (1/h[num_via-2])*(param2[num_via-2][1] + 2 * param2[num_via-2][2] + 3 * param2[num_via-2][3];
+        JointVelArray[num_samples][2] = (1/h[num_via-2])*(param3[num_via-2][1] + 2 * param3[num_via-2][2] + 3 * param3[num_via-2][3];
+        JointVelArray[num_samples][3] = (1/h[num_via-2])*(param4[num_via-2][1] + 2 * param4[num_via-2][2] + 3 * param4[num_via-2][3];
+        
+        // Calculating Acl
+        JointAclArray[num_samples][0] = (1/pow(h[num_via-2],2))*(2 * param1[num_via-2][2] + 6 * param1[num_via-2][3];
+        JointAclArray[num_samples][1] = (1/pow(h[num_via-2],2))*(2 * param2[num_via-2][2] + 6 * param2[num_via-2][3];
+        JointAclArray[num_samples][2] = (1/pow(h[num_via-2],2))*(2 * param3[num_via-2][2] + 6 * param3[num_via-2][3];
+        JointAclArray[num_samples][3] = (1/pow(h[num_via-2],2))*(2 * param4[num_via-2][2] + 6 * param4[num_via-2][3];
+        
+        
         
         // find maximum Joint Velocities
         vect JointVel_MAX = { 0, 0, 0, 0 };
